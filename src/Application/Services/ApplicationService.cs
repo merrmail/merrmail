@@ -49,6 +49,12 @@ public class ApplicationService : IApplicationService
     {
         // Environment variables we're already checked before calling RunAsync() so it can't be null
         _applicationEmailService.GetUnreadEmails(_environmentVariables!);
+        
+        // TODO: Mark email as read
+        // TODO: Check if an email is a concern
+        // TODO: Compare email to database
+        // TODO: Label emails
+        // TODO: Reply to emails
 
         await Task.Delay(0);
     }
