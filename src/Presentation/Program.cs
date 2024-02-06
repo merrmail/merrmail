@@ -1,5 +1,6 @@
 using Merrsoft.MerrMail.Application.Interfaces;
 using Merrsoft.MerrMail.Application.Services;
+using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Infrastructure.Configuration;
 using Merrsoft.MerrMail.Presentation;
 using Serilog;
@@ -27,6 +28,7 @@ try
 
             services.AddSingleton<IMerrMailService, MerrMailService>();
             services.AddSingleton<IConfigurationReader, EnvConfigurationReader>();
+            services.AddSingleton<IOAuthClientCredentialsReader, GoogleOAuthClientCredentialsReader>();
         })
         .UseSerilog();
 
