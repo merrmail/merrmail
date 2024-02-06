@@ -34,7 +34,7 @@ public class MerrMailWorker : BackgroundService
     {
         _logger.LogInformation("Stopping Merr Mail Background Service...");
         _httpClient.Dispose();
-        await _applicationService.StopAsync();
+        // await _applicationService.StopAsync();
 
         await base.StopAsync(cancellationToken);
     }
@@ -57,6 +57,9 @@ public class MerrMailWorker : BackgroundService
             _logger.LogInformation("No new emails found. Waiting for new emails");
 
             await _applicationService.RunAsync();
+
+            // TODO: Delete this when _applicationService.StopAsync() is implemented
+            await StopAsync(stoppingToken);
         }
     }
 
