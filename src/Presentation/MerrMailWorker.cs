@@ -18,7 +18,14 @@ public class MerrMailWorker : BackgroundService
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting Merr Mail Background Service...");
-        await _merrMailService.StartAsync();
+
+        if (!await _merrMailService.CanStartAsync())
+        {
+            _logger.LogError("Unable to start Merr Mail Service");
+
+            await StopAsync(cancellationToken);
+            return;
+        }
 
         await base.StartAsync(cancellationToken);
     }
@@ -37,16 +44,16 @@ public class MerrMailWorker : BackgroundService
         while (!stoppingToken.IsCancellationRequested)
         {
             await Task.Delay(1000, stoppingToken);
-            
+
             var hasInternet = await CheckInternetConnectionAsync();
 
             if (!hasInternet)
             {
                 _logger.LogWarning("Connection timeout. Retrying in 1s");
-                
+
                 continue;
             }
-            
+
             _logger.LogInformation("No new emails found. Waiting for new emails");
 
             await _merrMailService.RunAsync();
