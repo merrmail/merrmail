@@ -1,20 +1,35 @@
+using Merrsoft.MerrMail.Application.Interfaces;
+
 namespace Merrsoft.MerrMail.Presentation;
 
-public class MerrMailWorker(ILogger<MerrMailWorker> logger, HttpClient httpClient) : BackgroundService
+public class MerrMailWorker : BackgroundService
 {
-    public override Task StartAsync(CancellationToken cancellationToken)
+    private readonly ILogger<MerrMailWorker> _logger;
+    private readonly HttpClient _httpClient;
+    private readonly IMerrMailService _merrMailService;
+
+    public MerrMailWorker(ILogger<MerrMailWorker> logger, HttpClient httpClient, IMerrMailService merrMailService)
     {
-        logger.LogInformation("Starting Merr Mail Background Service...");
-        
-        return base.StartAsync(cancellationToken);
+        _logger = logger;
+        _httpClient = httpClient;
+        _merrMailService = merrMailService;
     }
 
-    public override Task StopAsync(CancellationToken cancellationToken)
+    public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation("Stopping Merr Mail Background Service...");
-        httpClient.Dispose();
-        
-        return base.StopAsync(cancellationToken);
+        _logger.LogInformation("Starting Merr Mail Background Service...");
+        await _merrMailService.StartAsync();
+
+        await base.StartAsync(cancellationToken);
+    }
+
+    public override async Task StopAsync(CancellationToken cancellationToken)
+    {
+        _logger.LogInformation("Stopping Merr Mail Background Service...");
+        _httpClient.Dispose();
+        await _merrMailService.StopAsync();
+
+        await base.StopAsync(cancellationToken);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -27,12 +42,14 @@ public class MerrMailWorker(ILogger<MerrMailWorker> logger, HttpClient httpClien
 
             if (!hasInternet)
             {
-                logger.LogWarning("Connection timeout. Retrying in 1s");
+                _logger.LogWarning("Connection timeout. Retrying in 1s");
                 
                 continue;
             }
             
-            logger.LogInformation("No new emails found. Waiting for new emails");
+            _logger.LogInformation("No new emails found. Waiting for new emails");
+
+            await _merrMailService.RunAsync();
         }
     }
 
@@ -40,7 +57,7 @@ public class MerrMailWorker(ILogger<MerrMailWorker> logger, HttpClient httpClien
     {
         try
         {
-            using var response = await httpClient.GetAsync("https://www.google.com");
+            using var response = await _httpClient.GetAsync("https://www.google.com");
 
             return response.IsSuccessStatusCode;
         }

@@ -1,3 +1,6 @@
+using Merrsoft.MerrMail.Application.Interfaces;
+using Merrsoft.MerrMail.Application.Services;
+using Merrsoft.MerrMail.Infrastructure.Configuration;
 using Merrsoft.MerrMail.Presentation;
 using Serilog;
 using Serilog.Events;
@@ -21,6 +24,9 @@ try
             services.AddHostedService<MerrMailWorker>();
 
             services.AddSingleton<HttpClient>();
+
+            services.AddSingleton<IMerrMailService, MerrMailService>();
+            services.AddSingleton<IConfigurationReader, EnvConfigurationReader>();
         })
         .UseSerilog();
 
