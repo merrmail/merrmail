@@ -1,7 +1,7 @@
 using Merrsoft.MerrMail.Application.Interfaces;
 using Merrsoft.MerrMail.Domain.Models;
 
-namespace Merrsoft.MerrMail.Infrastructure.Configuration;
+namespace Merrsoft.MerrMail.Infrastructure.Readers;
 
 public class EnvConfigurationReader : IConfigurationReader
 {

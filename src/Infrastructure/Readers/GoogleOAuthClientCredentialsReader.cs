@@ -2,7 +2,7 @@ using Merrsoft.MerrMail.Application.Interfaces;
 using Merrsoft.MerrMail.Domain.Models;
 using Newtonsoft.Json;
 
-namespace Merrsoft.MerrMail.Infrastructure.Configuration;
+namespace Merrsoft.MerrMail.Infrastructure.Readers;
 
 public class GoogleOAuthClientCredentialsReader : IOAuthClientCredentialsReader
 {
