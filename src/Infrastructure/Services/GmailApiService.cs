@@ -6,7 +6,7 @@ using Merrsoft.MerrMail.Infrastructure.Helpers;
 namespace Merrsoft.MerrMail.Infrastructure.Services;
 
 // TODO: Make Gmail service a property
-public class ApplicationGmailService : IApplicationEmailService
+public class GmailApiService : IEmailApiService
 {
     public List<Email> GetUnreadEmails(EnvironmentVariables env)
     {
