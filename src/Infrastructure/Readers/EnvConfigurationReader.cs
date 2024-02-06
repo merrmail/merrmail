@@ -9,13 +9,13 @@ public class EnvConfigurationReader : IConfigurationReader
     {
         DotNetEnv.Env.TraversePath().Load();
 
-        var env = new EnvironmentVariables
-        {
-            OAuthClientCredentialsPath = DotNetEnv.Env.GetString("OAUTH_CLIENT_CREDENTIALS_PATH"),
-            AccessTokenPath = DotNetEnv.Env.GetString("ACCESS_TOKEN_PATH"),
-            DatabaseConnection = DotNetEnv.Env.GetString("DATABASE_CONNECTION"),
-            HostAddress = DotNetEnv.Env.GetString("HOST_ADDRESS"),
-        };
+        var oAuthClientCredentialsPath = DotNetEnv.Env.GetString("OAUTH_CLIENT_CREDENTIALS_PATH");
+        var accessTokenPath = DotNetEnv.Env.GetString("ACCESS_TOKEN_PATH");
+        var databaseConnection = DotNetEnv.Env.GetString("DATABASE_CONNECTION");
+        var hostAddress = DotNetEnv.Env.GetString("HOST_ADDRESS");
+
+        var env = new EnvironmentVariables(oAuthClientCredentialsPath, accessTokenPath, databaseConnection,
+            hostAddress);
 
         return env;
     }
