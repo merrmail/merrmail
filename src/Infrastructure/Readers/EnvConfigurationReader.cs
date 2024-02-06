@@ -13,7 +13,8 @@ public class EnvConfigurationReader : IConfigurationReader
         {
             OAuthClientCredentialsPath = DotNetEnv.Env.GetString("OAUTH_CLIENT_CREDENTIALS_PATH"),
             AccessTokenPath = DotNetEnv.Env.GetString("ACCESS_TOKEN_PATH"),
-            DatabaseConnection = DotNetEnv.Env.GetString("DATABASE_CONNECTION")
+            DatabaseConnection = DotNetEnv.Env.GetString("DATABASE_CONNECTION"),
+            HostAddress = DotNetEnv.Env.GetString("HOST_ADDRESS"),
         };
 
         return env;
