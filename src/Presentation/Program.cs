@@ -26,7 +26,7 @@ try
 
             services.AddSingleton<HttpClient>();
 
-            services.AddSingleton<IMerrMailService, MerrMailService>();
+            services.AddSingleton<IApplicationService, ApplicationService>();
             services.AddSingleton<IConfigurationReader, EnvConfigurationReader>();
             services.AddSingleton<IOAuthClientCredentialsReader, GoogleOAuthClientCredentialsReader>();
         })

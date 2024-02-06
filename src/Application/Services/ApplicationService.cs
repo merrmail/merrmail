@@ -1,20 +1,18 @@
-using System.Text.Json;
 using Merrsoft.MerrMail.Application.Interfaces;
-using Merrsoft.MerrMail.Domain.Common;
 using Merrsoft.MerrMail.Domain.Models;
 using Microsoft.Extensions.Logging;
 
 namespace Merrsoft.MerrMail.Application.Services;
 
-public class MerrMailService : IMerrMailService
+public class ApplicationService : IApplicationService
 {
     private readonly IConfigurationReader _configurationReader;
-    private readonly ILogger<MerrMailService> _logger;
+    private readonly ILogger<ApplicationService> _logger;
     private readonly IOAuthClientCredentialsReader _oAuthClientCredentialsReader;
     private EnvironmentVariables? _environmentVariables;
     private GoogleOAuthClientCredentials? _googleOAuthClientCredentials;
 
-    public MerrMailService(IConfigurationReader configurationReader, ILogger<MerrMailService> logger,
+    public ApplicationService(IConfigurationReader configurationReader, ILogger<ApplicationService> logger,
         IOAuthClientCredentialsReader oAuthClientCredentialsReader)
     {
         _configurationReader = configurationReader;

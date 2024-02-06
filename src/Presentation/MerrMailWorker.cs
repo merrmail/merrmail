@@ -6,20 +6,20 @@ public class MerrMailWorker : BackgroundService
 {
     private readonly ILogger<MerrMailWorker> _logger;
     private readonly HttpClient _httpClient;
-    private readonly IMerrMailService _merrMailService;
+    private readonly IApplicationService _applicationService;
 
-    public MerrMailWorker(ILogger<MerrMailWorker> logger, HttpClient httpClient, IMerrMailService merrMailService)
+    public MerrMailWorker(ILogger<MerrMailWorker> logger, HttpClient httpClient, IApplicationService applicationService)
     {
         _logger = logger;
         _httpClient = httpClient;
-        _merrMailService = merrMailService;
+        _applicationService = applicationService;
     }
 
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         _logger.LogInformation("Starting Merr Mail Background Service...");
 
-        if (!await _merrMailService.CanStartAsync())
+        if (!await _applicationService.CanStartAsync())
         {
             _logger.LogError("Unable to start Merr Mail Service");
 
@@ -34,7 +34,7 @@ public class MerrMailWorker : BackgroundService
     {
         _logger.LogInformation("Stopping Merr Mail Background Service...");
         _httpClient.Dispose();
-        await _merrMailService.StopAsync();
+        await _applicationService.StopAsync();
 
         await base.StopAsync(cancellationToken);
     }
@@ -56,7 +56,7 @@ public class MerrMailWorker : BackgroundService
 
             _logger.LogInformation("No new emails found. Waiting for new emails");
 
-            await _merrMailService.RunAsync();
+            await _applicationService.RunAsync();
         }
     }
 

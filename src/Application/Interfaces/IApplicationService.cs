@@ -1,6 +1,6 @@
 namespace Merrsoft.MerrMail.Application.Interfaces;
 
-public interface IMerrMailService
+public interface IApplicationService
 {
     Task<bool> CanStartAsync();
     Task RunAsync();
