@@ -1,3 +1,4 @@
+using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Merrsoft.MerrMail.Application.Interfaces;
 using Merrsoft.MerrMail.Domain.Models;
@@ -11,31 +12,61 @@ public class GmailApiService : IEmailApiService
     public List<Email> GetUnreadEmails(EnvironmentVariables env)
     {
         var service = GmailApiHelper.GetGmailService(env.OAuthClientCredentialsPath, env.AccessTokenPath);
+        var emails = new List<Email>();
 
-        const string userId = "me";
+        var listRequest = service.Users.Messages.List(env.HostAddress);
+        listRequest.LabelIds = "INBOX";
+        listRequest.IncludeSpamTrash = false;
+        listRequest.Q = "is:unread";
 
-        var response = service.Users.Messages.List(userId).Execute();
+        var listResponse = listRequest.Execute();
 
-        if (response.Messages != null)
+        if (listResponse.Messages is null)
+            return [];
+
+        foreach (var message in listResponse.Messages)
         {
-            foreach (var message in response.Messages)
-            {
-                var fullMessage = service.Users.Messages.Get(userId, message.Id).Execute();
+            var messageContentRequest = service.Users.Messages.Get(env.HostAddress, message.Id);
+            var messageContent = messageContentRequest.Execute();
 
-                // Extract and print message details
-                Console.WriteLine($"Subject: {fullMessage.Payload.Headers.FirstOrDefault(h => h.Name == "Subject")?.Value}");
-                Console.WriteLine($"From: {fullMessage.Payload.Headers.FirstOrDefault(h => h.Name == "From")?.Value}");
-                Console.WriteLine($"Date: {fullMessage.Payload.Headers.FirstOrDefault(h => h.Name == "Date")?.Value}");
-                Console.WriteLine($"Snippet: {fullMessage.Snippet}");
-                Console.WriteLine("------------------------------------------------------------");
+            if (messageContent is not null)
+            {
+                var from = string.Empty;
+                var to = string.Empty;
+                var body = string.Empty;
+                var subject = string.Empty;
+                var date = string.Empty;
+                var mailDateTime = DateTime.Now;
+                var attachments = new List<string>();
+                var id = message.Id;
+
+                foreach (var messageParts in messageContent.Payload.Headers)
+                {
+                    switch (messageParts.Name)
+                    {
+                        case "From":
+                            from = messageParts.Value;
+                            break;
+                        case "Date":
+                            date = messageParts.Value;
+                            break;
+                        case "Subject":
+                            subject = messageParts.Value;
+                            break;
+                    }
+                }
+
+                // TODO: Read nested messages
+                if (messageContent.Payload.Parts is null && messageContent.Payload.Body is not null)
+                    body = messageContent.Payload.Body.Data;
+
+                // TODO: Decode the body
+                var email = new Email(from, to, body, mailDateTime, attachments, id);
+                emails.Add(email);
             }
         }
-        else
-        {
-            Console.WriteLine("No messages found.");
-        }
 
-        return [];
+        return emails;
     }
 
     public Task Reply(string to)
@@ -43,14 +74,14 @@ public class GmailApiService : IEmailApiService
         throw new NotImplementedException();
     }
 
-    public void MarkMessageAsRead(EnvironmentVariables env, string messageId)
+    public void MarkAsRead(EnvironmentVariables env, string messageId)
     {
         var mods = new ModifyMessageRequest
         {
             AddLabelIds = null,
             RemoveLabelIds = new List<string> { "UNREAD" }
         };
-        
+
         var service = GmailApiHelper.GetGmailService(env.OAuthClientCredentialsPath, env.AccessTokenPath);
         service.Users.Messages.Modify(mods, env.HostAddress, messageId).Execute();
     }

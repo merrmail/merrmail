@@ -10,7 +10,7 @@ public class ApplicationService : IApplicationService
     private readonly IConfigurationReader _configurationReader;
     private readonly ILogger<ApplicationService> _logger;
     private readonly IOAuthClientCredentialsReader _oAuthClientCredentialsReader;
-    private EnvironmentVariables? _environmentVariables;
+    private EnvironmentVariables _environmentVariables;
     private GoogleOAuthClientCredentials? _googleOAuthClientCredentials;
 
     public ApplicationService(IEmailApiService emailApiService,
@@ -48,9 +48,14 @@ public class ApplicationService : IApplicationService
     public async Task RunAsync()
     {
         // Environment variables we're already checked before calling RunAsync() so it can't be null
-        _emailApiService.GetUnreadEmails(_environmentVariables!);
+        var emails = _emailApiService.GetUnreadEmails(_environmentVariables);
         
         // TODO: Mark email as read
+        foreach (var email in emails)
+        {
+            _emailApiService.MarkAsRead(_environmentVariables, email.MessageId);
+        }
+        
         // TODO: Check if an email is a concern
         // TODO: Compare email to database
         // TODO: Label emails

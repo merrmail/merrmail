@@ -6,5 +6,5 @@ public interface IEmailApiService
 {
     List<Email> GetUnreadEmails(EnvironmentVariables env);
     Task Reply(string to);
-    void MarkMessageAsRead(EnvironmentVariables env, string messageId);
+    void MarkAsRead(EnvironmentVariables env, string messageId);
 }
