@@ -1,3 +1,5 @@
+using System.Text;
+using Google.Apis.Auth;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Merrsoft.MerrMail.Application.Interfaces;
@@ -29,41 +31,49 @@ public class GmailApiService : IEmailApiService
             var messageContentRequest = service.Users.Messages.Get(env.HostAddress, message.Id);
             var messageContent = messageContentRequest.Execute();
 
-            if (messageContent is not null)
+            if (messageContent is null) continue;
+            
+            // TODO: Remove unnecessary variables
+            // TODO: Remove unnecessary Email properties
+            var from = string.Empty;
+            var to = string.Empty;
+            var body = string.Empty;
+            var subject = string.Empty;
+            var date = string.Empty;
+            var mailDateTime = DateTime.Now;
+            var attachments = new List<string>();
+            var id = message.Id;
+
+            foreach (var messageParts in messageContent.Payload.Headers)
             {
-                var from = string.Empty;
-                var to = string.Empty;
-                var body = string.Empty;
-                var subject = string.Empty;
-                var date = string.Empty;
-                var mailDateTime = DateTime.Now;
-                var attachments = new List<string>();
-                var id = message.Id;
-
-                foreach (var messageParts in messageContent.Payload.Headers)
+                switch (messageParts.Name)
                 {
-                    switch (messageParts.Name)
-                    {
-                        case "From":
-                            from = messageParts.Value;
-                            break;
-                        case "Date":
-                            date = messageParts.Value;
-                            break;
-                        case "Subject":
-                            subject = messageParts.Value;
-                            break;
-                    }
+                    case "From":
+                        from = messageParts.Value;
+                        break;
+                    case "Date":
+                        date = messageParts.Value;
+                        break;
+                    case "Subject":
+                        subject = messageParts.Value;
+                        break;
                 }
-
-                // TODO: Read nested messages
-                if (messageContent.Payload.Parts is null && messageContent.Payload.Body is not null)
-                    body = messageContent.Payload.Body.Data;
-
-                // TODO: Decode the body
-                var email = new Email(from, to, body, mailDateTime, attachments, id);
-                emails.Add(email);
             }
+                
+            if (messageContent.Payload.Parts is not null && messageContent.Payload.Parts.Count > 0)
+            {
+                var firstPart = messageContent.Payload.Parts[0];
+
+                if (firstPart.Body?.Data != null)
+                {
+                    var data = firstPart.Body.Data;
+                    body = Base64Helper.GetDecodedString(data);
+                }
+            }
+                
+            // TODO: Decode the body
+            var email = new Email(from, to, body, mailDateTime, attachments, id);
+            emails.Add(email);
         }
 
         return emails;

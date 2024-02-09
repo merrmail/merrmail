@@ -15,10 +15,10 @@ public static class GmailApiHelper
             GoogleClientSecrets.FromStream(stream).Secrets,
             new[] { GmailService.Scope.GmailReadonly },
             "user",
-            System.Threading.CancellationToken.None,
+            CancellationToken.None,
             new FileDataStore(accessTokenPath, true)).Result;
 
-        return new GmailService(new BaseClientService.Initializer()
+        return new GmailService(new BaseClientService.Initializer
         {
             HttpClientInitializer = credential,
             ApplicationName = "Gmail API Sample",
