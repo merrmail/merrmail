@@ -1,8 +1,8 @@
-using System.Text;
 using Google.Apis.Auth;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Merrsoft.MerrMail.Application.Interfaces;
+using Merrsoft.MerrMail.Domain.Common;
 using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Infrastructure.Helpers;
 
@@ -68,7 +68,7 @@ public class GmailApiService : IEmailApiService
                 if (firstPart.Body?.Data != null)
                 {
                     var data = firstPart.Body.Data;
-                    body = Base64Helper.GetDecodedString(data);
+                    body = data.ToDecodedString();
                 }
             }
                 
