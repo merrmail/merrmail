@@ -11,12 +11,13 @@ namespace Merrsoft.MerrMail.Infrastructure.Services;
 // TODO: Make Gmail service a property
 public class GmailApiService : IEmailApiService
 {
+    private GmailService? _gmailService;
     public List<Email> GetUnreadEmails(EnvironmentVariables env)
     {
-        var service = GmailApiHelper.GetGmailService(env.OAuthClientCredentialsPath, env.AccessTokenPath);
+        _gmailService = GmailApiHelper.GetGmailService(env.OAuthClientCredentialsPath, env.AccessTokenPath);
         var emails = new List<Email>();
 
-        var listRequest = service.Users.Messages.List(env.HostAddress);
+        var listRequest = _gmailService.Users.Messages.List(env.HostAddress);
         listRequest.LabelIds = "INBOX";
         listRequest.IncludeSpamTrash = false;
         listRequest.Q = "is:unread";
@@ -28,7 +29,7 @@ public class GmailApiService : IEmailApiService
 
         foreach (var message in listResponse.Messages)
         {
-            var messageContentRequest = service.Users.Messages.Get(env.HostAddress, message.Id);
+            var messageContentRequest = _gmailService.Users.Messages.Get(env.HostAddress, message.Id);
             var messageContent = messageContentRequest.Execute();
 
             if (messageContent is null) continue;
@@ -92,7 +93,6 @@ public class GmailApiService : IEmailApiService
             RemoveLabelIds = new List<string> { "UNREAD" }
         };
 
-        var service = GmailApiHelper.GetGmailService(env.OAuthClientCredentialsPath, env.AccessTokenPath);
-        service.Users.Messages.Modify(mods, env.HostAddress, messageId).Execute();
+        _gmailService!.Users.Messages.Modify(mods, env.HostAddress, messageId).Execute();
     }
 }

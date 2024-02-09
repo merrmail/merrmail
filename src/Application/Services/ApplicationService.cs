@@ -53,7 +53,8 @@ public class ApplicationService : IApplicationService
         // TODO: Mark email as read
         foreach (var email in emails)
         {
-            _emailApiService.MarkAsRead(_environmentVariables, email.MessageId);
+            _logger.LogInformation("Email found, (Message Id: {emailId})", email.MessageId);
+            // _emailApiService.MarkAsRead(_environmentVariables, email.MessageId);
         }
         
         // TODO: Check if an email is a concern

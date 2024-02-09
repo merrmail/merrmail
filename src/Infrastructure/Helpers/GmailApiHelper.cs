@@ -13,7 +13,7 @@ public static class GmailApiHelper
 
         var credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
             GoogleClientSecrets.FromStream(stream).Secrets,
-            new[] { GmailService.Scope.GmailReadonly },
+            new[] { GmailService.Scope.GmailReadonly, GmailService.Scope.GmailModify },
             "user",
             CancellationToken.None,
             new FileDataStore(accessTokenPath, true)).Result;
