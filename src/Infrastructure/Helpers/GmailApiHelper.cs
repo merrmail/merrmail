@@ -13,12 +13,12 @@ public static class GmailApiHelper
 
         var credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
             GoogleClientSecrets.FromStream(stream).Secrets,
-            new[] { GmailService.Scope.GmailReadonly },
+            new[] { GmailService.Scope.GmailReadonly, GmailService.Scope.GmailModify },
             "user",
-            System.Threading.CancellationToken.None,
+            CancellationToken.None,
             new FileDataStore(accessTokenPath, true)).Result;
 
-        return new GmailService(new BaseClientService.Initializer()
+        return new GmailService(new BaseClientService.Initializer
         {
             HttpClientInitializer = credential,
             ApplicationName = "Gmail API Sample",

@@ -27,7 +27,7 @@ try
             services.AddSingleton<HttpClient>();
 
             services.AddSingleton<IApplicationService, ApplicationService>();
-            services.AddSingleton<IApplicationEmailService, ApplicationGmailService>();
+            services.AddSingleton<IEmailApiService, GmailApiService>();
             services.AddSingleton<IConfigurationReader, EnvConfigurationReader>();
             services.AddSingleton<IOAuthClientCredentialsReader, GoogleOAuthClientCredentialsReader>();
         })
