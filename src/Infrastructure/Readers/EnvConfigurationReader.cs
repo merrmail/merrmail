@@ -1,22 +1,24 @@
 using Merrsoft.MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Domain.Models;
+using Merrsoft.MerrMail.Domain.Contracts;
 
 namespace Merrsoft.MerrMail.Infrastructure.Readers;
 
 public class EnvConfigurationReader : IConfigurationReader
 {
-    public EnvironmentVariables ReadConfiguration()
+    private readonly IConfigurationSettings _configurationSettings;
+
+    public EnvConfigurationReader(IConfigurationSettings configurationSettings)
+    {
+        _configurationSettings = configurationSettings;
+    }
+
+    public void ReadConfiguration()
     {
         DotNetEnv.Env.TraversePath().Load();
 
-        var env = new EnvironmentVariables
-        {
-            OAuthClientCredentialsPath = DotNetEnv.Env.GetString("OAUTH_CLIENT_CREDENTIALS_PATH"),
-            AccessTokenPath = DotNetEnv.Env.GetString("ACCESS_TOKEN_PATH"),
-            DatabaseConnection = DotNetEnv.Env.GetString("DATABASE_CONNECTION"),
-            HostAddress = DotNetEnv.Env.GetString("HOST_ADDRESS"),
-        };
-
-        return env;
+        _configurationSettings.OAuthClientCredentialsPath = DotNetEnv.Env.GetString("OAUTH_CLIENT_CREDENTIALS_PATH");
+        _configurationSettings.AccessTokenPath = DotNetEnv.Env.GetString("ACCESS_TOKEN_PATH");
+        _configurationSettings.DatabaseConnection = DotNetEnv.Env.GetString("DATABASE_CONNECTION");
+        _configurationSettings.HostAddress = DotNetEnv.Env.GetString("HOST_ADDRESS");
     }
 }

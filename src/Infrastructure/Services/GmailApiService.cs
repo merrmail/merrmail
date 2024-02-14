@@ -3,6 +3,7 @@ using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Domain.Common;
+using Merrsoft.MerrMail.Domain.Contracts;
 using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Infrastructure.Helpers;
 
@@ -11,13 +12,22 @@ namespace Merrsoft.MerrMail.Infrastructure.Services;
 // TODO: Make Gmail service a property
 public class GmailApiService : IEmailApiService
 {
-    private GmailService? _gmailService;
-    public List<Email> GetUnreadEmails(EnvironmentVariables env)
+    private readonly IConfigurationSettings _configurationSettings;
+
+    public GmailApiService(IConfigurationSettings configurationSettings)
     {
-        _gmailService = GmailApiHelper.GetGmailService(env.OAuthClientCredentialsPath, env.AccessTokenPath);
+        _configurationSettings = configurationSettings;
+    }
+
+    private GmailService? _gmailService;
+
+    public List<Email> GetUnreadEmails()
+    {
+        _gmailService = GmailApiHelper.GetGmailService(_configurationSettings.OAuthClientCredentialsPath,
+            _configurationSettings.AccessTokenPath);
         var emails = new List<Email>();
 
-        var listRequest = _gmailService.Users.Messages.List(env.HostAddress);
+        var listRequest = _gmailService.Users.Messages.List(_configurationSettings.HostAddress);
         listRequest.LabelIds = "INBOX";
         listRequest.IncludeSpamTrash = false;
         listRequest.Q = "is:unread";
@@ -29,11 +39,12 @@ public class GmailApiService : IEmailApiService
 
         foreach (var message in listResponse.Messages)
         {
-            var messageContentRequest = _gmailService.Users.Messages.Get(env.HostAddress, message.Id);
+            var messageContentRequest =
+                _gmailService.Users.Messages.Get(_configurationSettings.HostAddress, message.Id);
             var messageContent = messageContentRequest.Execute();
 
             if (messageContent is null) continue;
-            
+
             // TODO: Remove unnecessary variables
             // TODO: Remove unnecessary Email properties
             var from = string.Empty;
@@ -60,7 +71,7 @@ public class GmailApiService : IEmailApiService
                         break;
                 }
             }
-                
+
             if (messageContent.Payload.Parts is not null && messageContent.Payload.Parts.Count > 0)
             {
                 var firstPart = messageContent.Payload.Parts[0];
@@ -71,7 +82,7 @@ public class GmailApiService : IEmailApiService
                     body = data.ToDecodedString();
                 }
             }
-                
+
             // TODO: Decode the body
             var email = new Email(from, to, body, mailDateTime, attachments, id);
             emails.Add(email);
@@ -85,7 +96,7 @@ public class GmailApiService : IEmailApiService
         throw new NotImplementedException();
     }
 
-    public void MarkAsRead(EnvironmentVariables env, string messageId)
+    public void MarkAsRead(string messageId)
     {
         var mods = new ModifyMessageRequest
         {
@@ -93,6 +104,6 @@ public class GmailApiService : IEmailApiService
             RemoveLabelIds = new List<string> { "UNREAD" }
         };
 
-        _gmailService!.Users.Messages.Modify(mods, env.HostAddress, messageId).Execute();
+        _gmailService!.Users.Messages.Modify(mods, _configurationSettings.HostAddress, messageId).Execute();
     }
 }
