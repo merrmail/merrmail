@@ -1,4 +1,4 @@
-using Merrsoft.MerrMail.Application.Interfaces;
+using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Domain.Models;
 using Microsoft.Extensions.Logging;
 

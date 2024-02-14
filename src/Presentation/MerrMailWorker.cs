@@ -1,4 +1,4 @@
-using Merrsoft.MerrMail.Application.Interfaces;
+using Merrsoft.MerrMail.Application.Contracts;
 
 namespace Merrsoft.MerrMail.Presentation;
 

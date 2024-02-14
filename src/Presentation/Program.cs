@@ -1,4 +1,4 @@
-using Merrsoft.MerrMail.Application.Interfaces;
+using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Application.Services;
 using Merrsoft.MerrMail.Infrastructure.Readers;
 using Merrsoft.MerrMail.Infrastructure.Services;
