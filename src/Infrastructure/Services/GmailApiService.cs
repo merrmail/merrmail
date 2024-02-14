@@ -10,24 +10,17 @@ using Merrsoft.MerrMail.Infrastructure.Helpers;
 namespace Merrsoft.MerrMail.Infrastructure.Services;
 
 // TODO: Make Gmail service a property
-public class GmailApiService : IEmailApiService
+public class GmailApiService(IConfigurationSettings configurationSettings) : IEmailApiService
 {
-    private readonly IConfigurationSettings _configurationSettings;
-
-    public GmailApiService(IConfigurationSettings configurationSettings)
-    {
-        _configurationSettings = configurationSettings;
-    }
-
     private GmailService? _gmailService;
 
     public List<Email> GetUnreadEmails()
     {
-        _gmailService = GmailApiHelper.GetGmailService(_configurationSettings.OAuthClientCredentialsPath,
-            _configurationSettings.AccessTokenPath);
+        _gmailService = GmailApiHelper.GetGmailService(configurationSettings.OAuthClientCredentialsPath,
+            configurationSettings.AccessTokenPath);
         var emails = new List<Email>();
 
-        var listRequest = _gmailService.Users.Messages.List(_configurationSettings.HostAddress);
+        var listRequest = _gmailService.Users.Messages.List(configurationSettings.HostAddress);
         listRequest.LabelIds = "INBOX";
         listRequest.IncludeSpamTrash = false;
         listRequest.Q = "is:unread";
@@ -40,7 +33,7 @@ public class GmailApiService : IEmailApiService
         foreach (var message in listResponse.Messages)
         {
             var messageContentRequest =
-                _gmailService.Users.Messages.Get(_configurationSettings.HostAddress, message.Id);
+                _gmailService.Users.Messages.Get(configurationSettings.HostAddress, message.Id);
             var messageContent = messageContentRequest.Execute();
 
             if (messageContent is null) continue;
@@ -104,6 +97,6 @@ public class GmailApiService : IEmailApiService
             RemoveLabelIds = new List<string> { "UNREAD" }
         };
 
-        _gmailService!.Users.Messages.Modify(mods, _configurationSettings.HostAddress, messageId).Execute();
+        _gmailService!.Users.Messages.Modify(mods, configurationSettings.HostAddress, messageId).Execute();
     }
 }
