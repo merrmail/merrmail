@@ -6,21 +6,30 @@ using Merrsoft.MerrMail.Domain.Common;
 using Merrsoft.MerrMail.Domain.Contracts;
 using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Infrastructure.Helpers;
+using Microsoft.Extensions.Logging;
 
 namespace Merrsoft.MerrMail.Infrastructure.Services;
 
 // TODO: Make Gmail service a property
-public class GmailApiService(IConfigurationSettings configurationSettings) : IEmailApiService
+public class GmailApiService(ILogger<GmailApiService> logger, IConfigurationSettings configurationSettings)
+    : IEmailApiService
 {
     private GmailService? _gmailService;
 
+    public void Initialize()
+    {
+        _gmailService ??= GmailApiHelper.GetGmailService(
+            configurationSettings.OAuthClientCredentialsPath,
+            configurationSettings.AccessTokenPath);
+    }
+
     public List<Email> GetUnreadEmails()
     {
-        _gmailService = GmailApiHelper.GetGmailService(configurationSettings.OAuthClientCredentialsPath,
-            configurationSettings.AccessTokenPath);
+        Initialize();
+        
         var emails = new List<Email>();
 
-        var listRequest = _gmailService.Users.Messages.List(configurationSettings.HostAddress);
+        var listRequest = _gmailService!.Users.Messages.List(configurationSettings.HostAddress);
         listRequest.LabelIds = "INBOX";
         listRequest.IncludeSpamTrash = false;
         listRequest.Q = "is:unread";
@@ -86,11 +95,14 @@ public class GmailApiService(IConfigurationSettings configurationSettings) : IEm
 
     public Task Reply(string to)
     {
+        Initialize();
         throw new NotImplementedException();
     }
 
     public void MarkAsRead(string messageId)
     {
+        Initialize();
+        
         var mods = new ModifyMessageRequest
         {
             AddLabelIds = null,
@@ -98,5 +110,6 @@ public class GmailApiService(IConfigurationSettings configurationSettings) : IEm
         };
 
         _gmailService!.Users.Messages.Modify(mods, configurationSettings.HostAddress, messageId).Execute();
+        logger.LogInformation("Marked email as read: {messageId}", messageId);
     }
 }

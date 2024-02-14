@@ -17,12 +17,12 @@ public class ApplicationService(
 
     public async Task<bool> CanStartAsync()
     {
-        logger.LogInformation("Reading configuration...");
+        logger.LogInformation("Starting validation...");
         configurationReader.ReadConfiguration();
 
         if (!File.Exists(configurationSettings.OAuthClientCredentialsPath))
         {
-            logger.LogCritical("OAuth Client Credentials Path does not exists");
+            logger.LogCritical("OAuth Client Credentials Path does not exists!");
 
             return false;
         }
@@ -39,16 +39,21 @@ public class ApplicationService(
 
     public async Task RunAsync()
     {
-        // Environment variables we're already checked before calling RunAsync() so it can't be null
+        
         var emails = emailApiService.GetUnreadEmails();
 
-        // TODO: Mark email as read
+        if (emails is [])
+        {
+            logger.LogInformation("No new emails found. Waiting for new emails...");
+            return;
+        }
+
         foreach (var email in emails)
         {
             logger.LogInformation("Email found, (Message Id: {emailId})", email.MessageId);
-            // _emailApiService.MarkAsRead(email.MessageId);
+            emailApiService.MarkAsRead(email.MessageId);
         }
-
+        
         // TODO: Check if an email is a concern
         // TODO: Compare email to database
         // TODO: Label emails
