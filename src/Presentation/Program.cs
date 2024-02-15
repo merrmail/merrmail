@@ -1,6 +1,8 @@
-using Merrsoft.MerrMail.Application.Interfaces;
+using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Application.Services;
-using Merrsoft.MerrMail.Infrastructure.Readers;
+using Merrsoft.MerrMail.Domain.Contracts;
+using Merrsoft.MerrMail.Domain.Models;
+using Merrsoft.MerrMail.Infrastructure.External;
 using Merrsoft.MerrMail.Infrastructure.Services;
 using Merrsoft.MerrMail.Presentation;
 using Serilog;
@@ -25,6 +27,7 @@ try
             services.AddHostedService<MerrMailWorker>();
 
             services.AddSingleton<HttpClient>();
+            services.AddSingleton<IConfigurationSettings, EnvironmentVariables>();
 
             services.AddSingleton<IApplicationService, ApplicationService>();
             services.AddSingleton<IEmailApiService, GmailApiService>();

@@ -1,4 +1,4 @@
-namespace Merrsoft.MerrMail.Application.Interfaces;
+namespace Merrsoft.MerrMail.Application.Contracts;
 
 public interface IApplicationService
 {

@@ -1,39 +1,33 @@
-using Merrsoft.MerrMail.Application.Interfaces;
+using Merrsoft.MerrMail.Application.Contracts;
 
 namespace Merrsoft.MerrMail.Presentation;
 
-public class MerrMailWorker : BackgroundService
+public class MerrMailWorker(
+    ILogger<MerrMailWorker> logger,
+    HttpClient httpClient,
+    IApplicationService applicationService)
+    : BackgroundService
 {
-    private readonly ILogger<MerrMailWorker> _logger;
-    private readonly HttpClient _httpClient;
-    private readonly IApplicationService _applicationService;
-
-    public MerrMailWorker(ILogger<MerrMailWorker> logger, HttpClient httpClient, IApplicationService applicationService)
-    {
-        _logger = logger;
-        _httpClient = httpClient;
-        _applicationService = applicationService;
-    }
-
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Starting Merr Mail Background Service...");
+        logger.LogInformation("Starting Merr Mail Background Service...");
 
-        if (!await _applicationService.CanStartAsync())
+        if (!await applicationService.CanStartAsync())
         {
-            _logger.LogError("Unable to start Merr Mail Service");
+            logger.LogError("Unable to start Merr Mail Service!");
 
             await StopAsync(cancellationToken);
             return;
         }
 
+        logger.LogInformation("Configuration is valid! Started reading emails...");
         await base.StartAsync(cancellationToken);
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Stopping Merr Mail Background Service...");
-        _httpClient.Dispose();
+        logger.LogInformation("Stopping Merr Mail Background Service...");
+        httpClient.Dispose();
         // await _applicationService.StopAsync();
 
         await base.StopAsync(cancellationToken);
@@ -49,14 +43,12 @@ public class MerrMailWorker : BackgroundService
 
             if (!hasInternet)
             {
-                _logger.LogWarning("Connection timeout. Retrying in 1s");
+                logger.LogWarning("Connection timeout. Retrying in 1s...");
 
                 continue;
             }
 
-            _logger.LogInformation("No new emails found. Waiting for new emails");
-
-            await _applicationService.RunAsync();
+            await applicationService.RunAsync();
 
             // TODO: Delete this when _applicationService.StopAsync() is implemented
             await StopAsync(stoppingToken);
@@ -67,7 +59,7 @@ public class MerrMailWorker : BackgroundService
     {
         try
         {
-            using var response = await _httpClient.GetAsync("https://www.google.com");
+            using var response = await httpClient.GetAsync("https://www.google.com");
 
             return response.IsSuccessStatusCode;
         }
