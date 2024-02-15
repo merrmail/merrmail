@@ -51,7 +51,7 @@ public class ApplicationService(
         foreach (var email in emails)
         {
             logger.LogInformation("Email found, (Message Id: {emailId})", email.MessageId);
-            emailApiService.MarkAsRead(email.MessageId);
+            // emailApiService.MarkAsRead(email.MessageId);
         }
         
         // TODO: Check if an email is a concern

@@ -16,7 +16,7 @@ public class GmailApiService(ILogger<GmailApiService> logger, IConfigurationSett
 {
     private GmailService? _gmailService;
 
-    public void Initialize()
+    private void Initialize()
     {
         _gmailService ??= GmailApiHelper.GetGmailService(
             configurationSettings.OAuthClientCredentialsPath,

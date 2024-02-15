@@ -1,4 +1,3 @@
-using Merrsoft.MerrMail.Domain.Contracts;
 using Merrsoft.MerrMail.Domain.Models;
 
 namespace Merrsoft.MerrMail.Application.Contracts;

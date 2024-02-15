@@ -51,7 +51,7 @@ public class MerrMailWorker(
             await applicationService.RunAsync();
 
             // TODO: Delete this when _applicationService.StopAsync() is implemented
-            // await StopAsync(stoppingToken);
+            await StopAsync(stoppingToken);
         }
     }
 
