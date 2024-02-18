@@ -1,7 +1,9 @@
+using System.ComponentModel.DataAnnotations;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Application.Services;
 using Merrsoft.MerrMail.Domain.Contracts;
 using Merrsoft.MerrMail.Domain.Models;
+using Merrsoft.MerrMail.Domain.Options;
 using Merrsoft.MerrMail.Infrastructure.External;
 using Merrsoft.MerrMail.Infrastructure.Services;
 using Merrsoft.MerrMail.Presentation;
@@ -21,20 +23,45 @@ try
     Log.Information("Starting Merr Mail");
     Log.Information("Configuring Services");
 
-    var builder = Host.CreateDefaultBuilder(args)
-        .ConfigureServices((_, services) =>
-        {
-            services.AddHostedService<MerrMailWorker>();
+    var builder = Host.CreateApplicationBuilder(args);
+    builder.Services.AddSerilog();
+    builder.Services.AddHostedService<MerrMailWorker>();
 
-            services.AddSingleton<HttpClient>();
-            services.AddSingleton<IConfigurationSettings, EnvironmentVariables>();
+    builder.Services.AddHttpClient();
+    builder.Services.AddSingleton<IConfigurationSettings, EnvironmentVariables>();
 
-            services.AddSingleton<IApplicationService, ApplicationService>();
-            services.AddSingleton<IEmailApiService, GmailApiService>();
-            services.AddSingleton<IConfigurationReader, EnvConfigurationReader>();
-            services.AddSingleton<IOAuthClientCredentialsReader, GoogleOAuthClientCredentialsReader>();
-        })
-        .UseSerilog();
+    builder.Services.AddSingleton<IApplicationService, ApplicationService>();
+    builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
+    builder.Services.AddSingleton<IConfigurationReader, EnvConfigurationReader>();
+    builder.Services.AddSingleton<IOAuthClientCredentialsReader, GoogleOAuthClientCredentialsReader>();
+
+    builder.Services
+        .AddOptions<EmailApiOptions>()
+        .BindConfiguration($"{nameof(EmailApiOptions)}")
+        .Validate(options => File.Exists(options.OAuthClientCredentialsFilePath),
+            $"{nameof(EmailApiOptions.OAuthClientCredentialsFilePath)} does not exists")
+        .Validate(options => Directory.Exists(options.AccessTokenDirectoryPath),
+            $"{nameof(EmailApiOptions.AccessTokenDirectoryPath)} does not exists")
+        .Validate(options =>
+                new EmailAddressAttribute().IsValid(options.HostAddress),
+            $"{nameof(EmailApiOptions.HostAddress)} is not a valid email")
+        .ValidateOnStart();
+
+    // TODO: Change [Required] to validating if data actually exists
+    builder.Services
+        .AddOptions<DataStorageOptions>()
+        .BindConfiguration($"{nameof(DataStorageOptions)}")
+        .ValidateDataAnnotations()
+        .ValidateOnStart();
+
+    builder.Services
+        .AddOptions<TensorFlowBindingOptions>()
+        .BindConfiguration($"{nameof(TensorFlowBindingOptions)}")
+        .Validate(options => File.Exists(options.PythonDllFilePath),
+            $"{nameof(TensorFlowBindingOptions.PythonDllFilePath)} does not exists")
+        .Validate(options => Directory.Exists(options.UniversalSentenceEncoderDirectoryPath),
+            $"{nameof(TensorFlowBindingOptions.UniversalSentenceEncoderDirectoryPath)} does not exists")
+        .ValidateOnStart();
 
     var host = builder.Build();
 
