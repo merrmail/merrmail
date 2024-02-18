@@ -1,8 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Application.Services;
-using Merrsoft.MerrMail.Domain.Contracts;
-using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Domain.Options;
 using Merrsoft.MerrMail.Infrastructure.External;
 using Merrsoft.MerrMail.Infrastructure.Services;
@@ -28,11 +26,9 @@ try
     builder.Services.AddHostedService<MerrMailWorker>();
 
     builder.Services.AddHttpClient();
-    builder.Services.AddSingleton<IConfigurationSettings, EnvironmentVariables>();
 
     builder.Services.AddSingleton<IApplicationService, ApplicationService>();
     builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
-    builder.Services.AddSingleton<IConfigurationReader, EnvConfigurationReader>();
     builder.Services.AddSingleton<IOAuthClientCredentialsReader, GoogleOAuthClientCredentialsReader>();
 
     builder.Services
