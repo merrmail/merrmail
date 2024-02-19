@@ -10,7 +10,7 @@ using Microsoft.Extensions.Options;
 
 namespace Merrsoft.MerrMail.Infrastructure.Services;
 
-// TODO: Make Gmail service a property
+// TODO: Setup GmailService on start
 public class GmailApiService(
     ILogger<GmailApiService> logger,
     IOptions<EmailApiOptions> emailApiOptions)
@@ -91,6 +91,8 @@ public class GmailApiService(
             // TODO: Decode the body
             var email = new Email(from, to, body, mailDateTime, attachments, id);
             emails.Add(email);
+            
+            logger.LogInformation("Email found, (Message Id: {emailId})", email.MessageId);
         }
 
         return emails;

@@ -4,7 +4,6 @@ using Merrsoft.MerrMail.Application.Services;
 using Merrsoft.MerrMail.Domain.Options;
 using Merrsoft.MerrMail.Infrastructure.External;
 using Merrsoft.MerrMail.Infrastructure.Services;
-using Merrsoft.MerrMail.Presentation;
 using Serilog;
 using Serilog.Events;
 
@@ -18,19 +17,21 @@ try
             outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] - {Message:lj}{NewLine}{Exception}")
         .CreateLogger();
 
-    Log.Information("Starting Merr Mail");
-    Log.Information("Configuring Services");
+    Log.Information("Welcome to Merr Mail!");
+    Log.Information("Configuring Services...");
 
     var builder = Host.CreateApplicationBuilder(args);
+    
     builder.Services.AddSerilog();
+    builder.Services.AddHttpClient();
+    
     builder.Services.AddHostedService<MerrMailWorker>();
 
-    builder.Services.AddHttpClient();
-
-    builder.Services.AddSingleton<IApplicationService, ApplicationService>();
     builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
     builder.Services.AddSingleton<IOAuthClientCredentialsReader, GoogleOAuthClientCredentialsReader>();
 
+    #region Application Options
+    
     builder.Services
         .AddOptions<EmailApiOptions>()
         .BindConfiguration($"{nameof(EmailApiOptions)}")
@@ -58,10 +59,14 @@ try
         .Validate(options => Directory.Exists(options.UniversalSentenceEncoderDirectoryPath),
             $"{nameof(TensorFlowBindingOptions.UniversalSentenceEncoderDirectoryPath)} does not exists")
         .ValidateOnStart();
+    
+    #endregion
 
     var host = builder.Build();
-
-    host.Run();
+    
+    Log.Information("Services Configured!");
+    
+    host.Run(); // Go to Application.Services.MerrMailWorker to see the background service that holds everything together
 }
 catch (Exception ex)
 {
