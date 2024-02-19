@@ -41,7 +41,7 @@ public class MerrMailWorker(
             // TODO: Reply to email
 
             await Task.Delay(1000, stoppingToken);
-            await StopAsync(stoppingToken); // <== Uncomment this when you want to test the loop
+            await StopAsync(stoppingToken); // <== Comment this when you want to test the loop
         }
     }
 
