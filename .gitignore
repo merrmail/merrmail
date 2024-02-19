@@ -398,5 +398,5 @@ FodyWeavers.xsd
 *.sln.iml
 .idea/
 
-# Environment variables
-.env
+# You can put all your client secrets here
+secrets/
