@@ -3,20 +3,24 @@ using Google.Apis.Gmail.v1;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
 
-namespace Merrsoft.MerrMail.Infrastructure.Helpers;
+// ReSharper disable once CheckNamespace
+namespace Merrsoft.MerrMail.Infrastructure.Services;
 
-internal static class GmailApiHelper
+public partial class GmailApiService
 {
-    public static async Task<GmailService> GetGmailService(string credentialsPath, string accessTokenPath)
+    private readonly string _credentialsPath = emailApiOptions.Value.OAuthClientCredentialsFilePath;
+    private readonly string _tokenPath = emailApiOptions.Value.AccessTokenDirectoryPath;
+    
+    private async Task<GmailService> GetGmailServiceAsync()
     {
-        await using var stream = new FileStream(credentialsPath, FileMode.Open, FileAccess.Read);
+        await using var stream = new FileStream(_credentialsPath, FileMode.Open, FileAccess.Read);
 
         var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
             (await GoogleClientSecrets.FromStreamAsync(stream)).Secrets,
             new[] { GmailService.Scope.GmailReadonly, GmailService.Scope.GmailModify },
             "user",
             CancellationToken.None,
-            new FileDataStore(accessTokenPath, true));
+            new FileDataStore(_tokenPath, true));
 
         return new GmailService(new BaseClientService.Initializer
         {

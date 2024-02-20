@@ -4,18 +4,16 @@ using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Domain.Common;
 using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Domain.Options;
-using Merrsoft.MerrMail.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Merrsoft.MerrMail.Infrastructure.Services;
 
-public class GmailApiService(
+public partial class GmailApiService(
     ILogger<GmailApiService> logger,
     IOptions<EmailApiOptions> emailApiOptions)
     : IEmailApiService
 {
-    private readonly EmailApiOptions _emailApiOptions = emailApiOptions.Value;
     private readonly string _host = emailApiOptions.Value.HostAddress;
     private GmailService? _gmailService;
 
@@ -24,9 +22,7 @@ public class GmailApiService(
         try
         {
             logger.LogInformation("Attempting to get Gmail Service...");
-            _gmailService = await GmailApiHelper.GetGmailService(
-                _emailApiOptions.OAuthClientCredentialsFilePath,
-                _emailApiOptions.AccessTokenDirectoryPath);
+            _gmailService = await GetGmailServiceAsync();
 
             if (_gmailService is null)
             {
@@ -54,12 +50,13 @@ public class GmailApiService(
 
         return true;
     }
-    
+
     public List<Email> GetUnreadEmails()
     {
         var emails = new List<Email>();
 
-        var listRequest = _gmailService!.Users.Messages.List(_emailApiOptions.HostAddress);
+        var listRequest = _gmailService!.Users.Messages.List(_host);
+        
         listRequest.LabelIds = "INBOX";
         listRequest.IncludeSpamTrash = false;
         listRequest.Q = "is:unread";
@@ -72,7 +69,7 @@ public class GmailApiService(
         foreach (var message in listResponse.Messages)
         {
             var messageContentRequest =
-                _gmailService.Users.Messages.Get(_emailApiOptions.HostAddress, message.Id);
+                _gmailService.Users.Messages.Get(_host, message.Id);
             var messageContent = messageContentRequest.Execute();
 
             if (messageContent is null) continue;
@@ -138,7 +135,7 @@ public class GmailApiService(
             RemoveLabelIds = new List<string> { "UNREAD" }
         };
 
-        _gmailService!.Users.Messages.Modify(mods, _emailApiOptions.HostAddress, messageId).Execute();
+        _gmailService!.Users.Messages.Modify(mods, _host, messageId).Execute();
         logger.LogInformation("Marked email as read: {messageId}", messageId);
     }
 }
