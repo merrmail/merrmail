@@ -1,4 +1,5 @@
 using Merrsoft.MerrMail.Application.Contracts;
+using Merrsoft.MerrMail.Domain.Enums;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -36,11 +37,18 @@ public class MerrMailWorker(
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            var emails = emailApiService.GetThreadsMessage();
+            var threads = emailApiService.GetThreadsMessage();
 
-            foreach (var email in emails)
+            foreach (var thread in threads)
             {
-                // emailApiService.MarkAsRead(email.MessageId);
+                if (emailApiService.ThreadShouldAnalyze(thread))
+                {
+                    var random = new Random();
+                    var labelType = random.Next(2) == 0 ? LabelType.High : LabelType.Low;
+                    emailApiService.LabelThread(labelType, thread);
+                }
+                
+                emailApiService.ArchiveThread(thread);
             }
 
             // TODO: Check if an email is a concern

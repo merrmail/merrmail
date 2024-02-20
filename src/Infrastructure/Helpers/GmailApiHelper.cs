@@ -3,7 +3,9 @@ using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
+using Merrsoft.MerrMail.Domain.Enums;
 using Microsoft.Extensions.Logging;
+using Thread = Google.Apis.Gmail.v1.Data.Thread;
 
 // ReSharper disable once CheckNamespace
 namespace Merrsoft.MerrMail.Infrastructure.Services;
@@ -115,5 +117,24 @@ public partial class GmailApiService
         {
             return null;
         }
+    }
+
+    private static string GetLabelName(LabelType labelType)
+    {
+        return labelType switch
+        {
+            LabelType.High => "MerrMail: High Priority",
+            LabelType.Low => "MerrMail: Low Priority",
+            LabelType.Other => "MerrMail: Other",
+            _ => throw new ArgumentOutOfRangeException(nameof(labelType), labelType, null)
+        };
+    }
+
+    private bool ThreadAnalyzed(Thread thread)
+    {
+        return thread.Messages?.Any(message => message.LabelIds?.Any(label =>
+            label == GetLabelId("MerrMail: High Priority") ||
+            label == GetLabelId("MerrMail: Low Priority") ||
+            label == GetLabelId("MerrMail: Other")) is true) is true;
     }
 }
