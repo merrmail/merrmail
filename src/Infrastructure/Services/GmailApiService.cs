@@ -10,26 +10,53 @@ using Microsoft.Extensions.Options;
 
 namespace Merrsoft.MerrMail.Infrastructure.Services;
 
-// TODO: Setup GmailService on start
 public class GmailApiService(
     ILogger<GmailApiService> logger,
     IOptions<EmailApiOptions> emailApiOptions)
     : IEmailApiService
 {
     private readonly EmailApiOptions _emailApiOptions = emailApiOptions.Value;
+    private readonly string _host = emailApiOptions.Value.HostAddress;
     private GmailService? _gmailService;
 
-    private void Initialize()
+    public async Task<bool> InitializeAsync()
     {
-        _gmailService ??= GmailApiHelper.GetGmailService(
-            _emailApiOptions.OAuthClientCredentialsFilePath,
-            _emailApiOptions.AccessTokenDirectoryPath);
-    }
+        try
+        {
+            logger.LogInformation("Attempting to get Gmail Service...");
+            _gmailService = await GmailApiHelper.GetGmailService(
+                _emailApiOptions.OAuthClientCredentialsFilePath,
+                _emailApiOptions.AccessTokenDirectoryPath);
 
+            if (_gmailService is null)
+            {
+                logger.LogError("Gmail Service is null. Initialization failed.");
+                return false;
+            }
+
+            logger.LogInformation("Gmail Service initialized successfully.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Error getting or initializing Gmail Service: {message}", ex.Message);
+            return false;
+        }
+
+        try
+        {
+            // TODO: Label creations here
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Error creating required labels: {message}", ex.Message);
+            return false;
+        }
+
+        return true;
+    }
+    
     public List<Email> GetUnreadEmails()
     {
-        Initialize();
-
         var emails = new List<Email>();
 
         var listRequest = _gmailService!.Users.Messages.List(_emailApiOptions.HostAddress);
@@ -91,7 +118,7 @@ public class GmailApiService(
             // TODO: Decode the body
             var email = new Email(from, to, body, mailDateTime, attachments, id);
             emails.Add(email);
-            
+
             logger.LogInformation("Email found, (Message Id: {emailId})", email.MessageId);
         }
 
@@ -100,14 +127,11 @@ public class GmailApiService(
 
     public Task Reply(string to)
     {
-        Initialize();
         throw new NotImplementedException();
     }
 
     public void MarkAsRead(string messageId)
     {
-        Initialize();
-
         var mods = new ModifyMessageRequest
         {
             AddLabelIds = null,

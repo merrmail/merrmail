@@ -12,20 +12,28 @@ public class MerrMailWorker(
 {
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
-        logger.LogInformation("Starting Merr Mail Background Service...");
+        logger.LogInformation("Starting validation...");
 
-        if (!await HasInternetAsync())
+        if (!await CheckInternetAsync())
         {
-            logger.LogError("Connection Timeout! Unable to start Merr Mail Service!");
+            logger.LogError("Internet connection validation failed. Aborting startup.");
             return;
         }
 
-        logger.LogInformation("Started reading emails...");
+        if (!await emailApiService.InitializeAsync())
+        {
+            logger.LogError("Email API service initialization failed. Aborting startup.");
+            return;
+        }
+
+        logger.LogInformation("Validation Complete!");
         await base.StartAsync(cancellationToken);
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        logger.LogInformation("Started reading emails...");
+
         while (!stoppingToken.IsCancellationRequested)
         {
             var emails = emailApiService.GetUnreadEmails();
@@ -51,7 +59,7 @@ public class MerrMailWorker(
         await base.StopAsync(cancellationToken);
     }
 
-    private async Task<bool> HasInternetAsync()
+    private async Task<bool> CheckInternetAsync()
     {
         try
         {
@@ -60,6 +68,7 @@ public class MerrMailWorker(
         }
         catch
         {
+            logger.LogError("Connection Timeout!");
             return false;
         }
     }
