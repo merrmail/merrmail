@@ -51,72 +51,48 @@ public partial class GmailApiService(
         return true;
     }
 
-    public List<Email> GetUnreadEmails()
+    public List<EmailThread> GetThreadsMessage()
     {
-        var emails = new List<Email>();
+        var emails = new List<EmailThread>();
+        var threadsResponse = GetThreads();
 
-        var listRequest = _gmailService!.Users.Messages.List(_host);
-        
-        listRequest.LabelIds = "INBOX";
-        listRequest.IncludeSpamTrash = false;
-        listRequest.Q = "is:unread";
-
-        var listResponse = listRequest.Execute();
-
-        if (listResponse.Messages is null)
+        if (threadsResponse?.Threads is null)
             return [];
 
-        foreach (var message in listResponse.Messages)
+        foreach (var thread in threadsResponse.Threads)
         {
-            var messageContentRequest =
-                _gmailService.Users.Messages.Get(_host, message.Id);
-            var messageContent = messageContentRequest.Execute();
+            var threadDetailsResponse = _gmailService!.Users.Threads.Get(_host, thread.Id).Execute();
 
-            if (messageContent is null) continue;
-
-            // TODO: Remove unnecessary variables
-            // TODO: Remove unnecessary Email properties
-            var from = string.Empty;
-            var to = string.Empty;
-            var body = string.Empty;
-            var subject = string.Empty;
-            var date = string.Empty;
-            var mailDateTime = DateTime.Now;
-            var attachments = new List<string>();
-            var id = message.Id;
-
-            foreach (var messageParts in messageContent.Payload.Headers)
+            if (threadDetailsResponse?.Messages?.Any() is not true)
             {
-                switch (messageParts.Name)
-                {
-                    case "From":
-                        from = messageParts.Value;
-                        break;
-                    case "Date":
-                        date = messageParts.Value;
-                        break;
-                    case "Subject":
-                        subject = messageParts.Value;
-                        break;
-                }
+                logger.LogWarning("Thread ID {threadId} has no messages or failed to retrieve details.", thread.Id);
+                continue;
             }
 
-            if (messageContent.Payload.Parts is not null && messageContent.Payload.Parts.Count > 0)
-            {
-                var firstPart = messageContent.Payload.Parts[0];
+            var firstMessage = threadDetailsResponse.Messages.First();
+            var firstEmail = _gmailService!.Users.Messages.Get(_host, firstMessage.Id).Execute();
 
-                if (firstPart.Body?.Data != null)
-                {
-                    var data = firstPart.Body.Data;
-                    body = data.ToDecodedString();
-                }
+            if (firstEmail is null)
+            {
+                logger.LogWarning("Failed to retrieve email for thread ID {threadId}. Message is null.", thread.Id);
+                continue;
             }
 
-            // TODO: Decode the body
-            var email = new Email(from, to, body, mailDateTime, attachments, id);
+            var sender = firstEmail.Payload.Headers?.FirstOrDefault(h => h.Name == "From")?.Value ?? "Unknown Sender";
+            var parsedEmail = sender.ParseEmail();
+            if (parsedEmail.Equals(_host, StringComparison.OrdinalIgnoreCase))
+            {
+                logger.LogInformation("Host is the first sender for thread Id {threadId}. Skipping...", thread.Id);
+                continue;
+            }
+
+            var subject = firstEmail.Payload.Headers?.FirstOrDefault(h => h.Name == "Subject")?.Value ?? "No Subject";
+            var body = firstEmail.Snippet;
+
+            var email = new EmailThread(thread.Id, subject, body, sender);
+            logger.LogInformation("Email found: {threadId} | {subject} | {sender} | {body}", email.Id, email.Subject,
+                email.Sender, email.Body);
             emails.Add(email);
-
-            logger.LogInformation("Email found, (Message Id: {emailId})", email.MessageId);
         }
 
         return emails;

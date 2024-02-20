@@ -36,7 +36,7 @@ public class MerrMailWorker(
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            var emails = emailApiService.GetUnreadEmails();
+            var emails = emailApiService.GetThreadsMessage();
 
             foreach (var email in emails)
             {

@@ -1,5 +1,6 @@
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Gmail.v1;
+using Google.Apis.Gmail.v1.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
 
@@ -27,5 +28,22 @@ public partial class GmailApiService
             HttpClientInitializer = credential,
             ApplicationName = "Gmail API Sample",
         });
+    }
+
+    private ListThreadsResponse? GetThreads()
+    {
+        try
+        {
+            var threadsRequest = _gmailService!.Users.Threads.List(_host);
+            threadsRequest.LabelIds = "INBOX";
+            threadsRequest.IncludeSpamTrash = false;
+            var threadsResponse = threadsRequest.Execute();
+
+            return threadsResponse;
+        }
+        catch (NullReferenceException)
+        {
+            return null;
+        }
     }
 }

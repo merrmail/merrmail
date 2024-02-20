@@ -5,7 +5,7 @@ namespace Merrsoft.MerrMail.Application.Contracts;
 public interface IEmailApiService
 {
     Task<bool> InitializeAsync();
-    List<Email> GetUnreadEmails();
     Task Reply(string to);
     void MarkAsRead(string messageId);
+    List<EmailThread> GetThreadsMessage();
 }
