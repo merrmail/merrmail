@@ -40,7 +40,11 @@ public partial class GmailApiService(
 
         try
         {
-            // TODO: Label creations here
+            logger.LogInformation("Creating required labels...");
+            
+            CreateLabel("MerrMail: High Priority"); // Red
+            CreateLabel("MerrMail: Low Priority"); // Green
+            CreateLabel("MerrMail: Other"); // Blue
         }
         catch (Exception ex)
         {

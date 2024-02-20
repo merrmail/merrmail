@@ -21,10 +21,10 @@ try
     Log.Information("Configuring Services...");
 
     var builder = Host.CreateApplicationBuilder(args);
-    
+
     builder.Services.AddSerilog();
     builder.Services.AddHttpClient();
-    
+
     builder.Services.AddHostedService<MerrMailWorker>();
 
     builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
@@ -59,7 +59,7 @@ try
         .Validate(options => Directory.Exists(options.UniversalSentenceEncoderDirectoryPath),
             $"{nameof(TensorFlowBindingOptions.UniversalSentenceEncoderDirectoryPath)} does not exists")
         .ValidateOnStart();
-    
+
     #endregion
 
     var host = builder.Build();
