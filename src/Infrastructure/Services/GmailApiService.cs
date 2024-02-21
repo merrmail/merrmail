@@ -166,16 +166,4 @@ public partial class GmailApiService(
     {
         throw new NotImplementedException();
     }
-
-    public void MarkAsRead(string messageId)
-    {
-        var mods = new ModifyMessageRequest
-        {
-            AddLabelIds = null,
-            RemoveLabelIds = new List<string> { "UNREAD" }
-        };
-
-        _gmailService!.Users.Messages.Modify(mods, _host, messageId).Execute();
-        logger.LogInformation("Marked email as read: {messageId}", messageId);
-    }
 }

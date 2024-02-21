@@ -46,18 +46,18 @@ public class MerrMailWorker(
                     var random = new Random();
                     var labelType = random.Next(2) == 0 ? LabelType.High : LabelType.Low;
                     emailApiService.LabelThread(labelType, thread);
+                    // TODO: Reply to email thread
+                    // TODO: Check if an email is a concern
+                    // TODO: Compare email to database
+                    // TODO: Label email 
+                    // TODO: Reply to email
                 }
-                
+
                 emailApiService.ArchiveThread(thread);
             }
 
-            // TODO: Check if an email is a concern
-            // TODO: Compare email to database
-            // TODO: Label email 
-            // TODO: Reply to email
-
             await Task.Delay(1000, stoppingToken);
-            await StopAsync(stoppingToken); // <== Comment this when you want to test the loop
+            // await StopAsync(stoppingToken); // <== Comment this when you want to test the loop
         }
     }
 

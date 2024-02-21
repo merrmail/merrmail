@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Application.Services;
 using Merrsoft.MerrMail.Domain.Options;
-using Merrsoft.MerrMail.Infrastructure.External;
 using Merrsoft.MerrMail.Infrastructure.Services;
 using Serilog;
 using Serilog.Events;
@@ -28,7 +27,6 @@ try
     builder.Services.AddHostedService<MerrMailWorker>();
 
     builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
-    builder.Services.AddSingleton<IOAuthClientCredentialsReader, GoogleOAuthClientCredentialsReader>();
 
     #region Application Options
     
@@ -65,7 +63,7 @@ try
     var host = builder.Build();
     
     Log.Information("Services Configured!");
-    
+
     host.Run(); // Go to Application.Services.MerrMailWorker to see the background service that holds everything together
 }
 catch (Exception ex)

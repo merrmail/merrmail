@@ -7,7 +7,6 @@ public interface IEmailApiService
 {
     Task<bool> InitializeAsync();
     Task Reply(string to);
-    void MarkAsRead(string messageId);
     void LabelThread(LabelType labelType, EmailThread emailThread);
     List<EmailThread> GetThreadsMessage();
     bool ThreadShouldAnalyze(EmailThread emailThread);
