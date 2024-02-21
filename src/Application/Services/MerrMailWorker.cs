@@ -37,27 +37,23 @@ public class MerrMailWorker(
 
         while (!stoppingToken.IsCancellationRequested)
         {
-            var threads = emailApiService.GetThreadsMessage();
-
-            foreach (var thread in threads)
+            var emailThread = emailApiService.GetEmailThread();
+            if (emailThread is null)
             {
-                if (emailApiService.ThreadShouldAnalyze(thread))
-                {
-                    var random = new Random();
-                    var labelType = random.Next(2) == 0 ? LabelType.High : LabelType.Low;
-                    emailApiService.LabelThread(labelType, thread);
-                    // TODO: Reply to email thread
-                    // TODO: Check if an email is a concern
-                    // TODO: Compare email to database
-                    // TODO: Label email 
-                    // TODO: Reply to email
-                }
-
-                emailApiService.ArchiveThread(thread);
+                await Task.Delay(5000, stoppingToken);
+                continue;
             }
 
+            // TODO: Check if an email is a concern
+            // TODO: Compare email to database
+
+            const LabelType labelType = LabelType.Low;
+            var replyMessage = Guid.NewGuid().ToString();
+            emailApiService.ReplyThread(emailThread, replyMessage); 
+            emailApiService.MoveThread(emailThread.Id, labelType);
+
             await Task.Delay(1000, stoppingToken);
-            // await StopAsync(stoppingToken); // <== Comment this when you want to test the loop
+            // break; // <== Comment this when you want to test the loop
         }
     }
 

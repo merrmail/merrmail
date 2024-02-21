@@ -102,10 +102,13 @@ public partial class GmailApiService
                 createdLabel.Name, createdLabel.Id, backgroundColor, textColor);
     }
 
-    private string? GetLabelId(string labelName)
+    private string? GetLabelId(string? labelName)
     {
         try
         {
+            if (labelName is null)
+                return null;
+
             var labelsRequest = _gmailService!.Users.Labels.List(_host);
             var labelsResponse = labelsRequest?.Execute();
 
@@ -119,13 +122,14 @@ public partial class GmailApiService
         }
     }
 
-    private static string GetLabelName(LabelType labelType)
+    private static string? GetLabelName(LabelType labelType)
     {
         return labelType switch
         {
             LabelType.High => "MerrMail: High Priority",
             LabelType.Low => "MerrMail: Low Priority",
             LabelType.Other => "MerrMail: Other",
+            LabelType.None => null,
             _ => throw new ArgumentOutOfRangeException(nameof(labelType), labelType, null)
         };
     }
@@ -137,4 +141,28 @@ public partial class GmailApiService
             label == GetLabelId("MerrMail: Low Priority") ||
             label == GetLabelId("MerrMail: Other")) is true) is true;
     }
+
+    private bool MessageAnalyzed(Message message)
+    {
+        return message.LabelIds?.Any(label =>
+            label == GetLabelId("MerrMail: High Priority") ||
+            label == GetLabelId("MerrMail: Low Priority") ||
+            label == GetLabelId("MerrMail: Other")) is true;
+    }
+
+    // private void MoveThread(Thread thread, LabelType addLabel)
+    // {
+    //     var labelName = GetLabelName(addLabel);
+    //     var labelId = GetLabelId(labelName);
+    //
+    //     var modifyThreadRequest = new ModifyThreadRequest
+    //     {
+    //         AddLabelIds = labelId is not null ? new List<string> { labelId } : null,
+    //         RemoveLabelIds = new List<string> { "INBOX" }
+    //     };
+    //     
+    //     var modifyThreadResponse = _gmailService!.Users.Threads.Modify(modifyThreadRequest, _host, thread.Id).Execute();
+    //     if (modifyThreadResponse is not null) logger.LogInformation("Thread {threadId} moved successfully.", thread.Id);
+    //     else logger.LogWarning("Failed to move thread {threadId}", thread.Id);
+    // }
 }

@@ -5,4 +5,5 @@ public enum LabelType
     High,
     Low,
     Other,
+    None,
 }

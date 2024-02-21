@@ -61,7 +61,7 @@ try
     #endregion
 
     var host = builder.Build();
-    
+
     Log.Information("Services Configured!");
 
     host.Run(); // Go to Application.Services.MerrMailWorker to see the background service that holds everything together
