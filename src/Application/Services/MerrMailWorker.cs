@@ -44,16 +44,16 @@ public class MerrMailWorker(
                 continue;
             }
 
-            // TODO: Check if an email is a concern
-            // TODO: Compare email to database
+            // TODO: Check if an email is a concern using ML.NET
+            // TODO: Compare email to database using NLP
 
             const LabelType labelType = LabelType.Low;
             var replyMessage = Guid.NewGuid().ToString();
-            emailApiService.ReplyThread(emailThread, replyMessage); 
+            emailApiService.ReplyThread(emailThread, replyMessage);
             emailApiService.MoveThread(emailThread.Id, labelType);
 
             await Task.Delay(1000, stoppingToken);
-            // break; // <== Comment this when you want to test the loop
+            // break; /* <== Comment this when you want to test the loop */
         }
     }
 

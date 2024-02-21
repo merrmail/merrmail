@@ -56,23 +56,6 @@ public partial class GmailApiService(
         return true;
     }
 
-    public void LabelThread(LabelType labelType, EmailThread emailThread)
-    {
-        var threadDetailsRequest = _gmailService!.Users.Threads.Get(_host, emailThread.Id);
-        var threadDetailsResponse = threadDetailsRequest.Execute();
-
-        if (threadDetailsResponse?.Messages?.Any() is not true)
-        {
-            logger.LogWarning("Thread {threadId} has no messages or failed to retrieve details.", emailThread.Id);
-            return;
-        }
-
-        var labelId = GetLabelId(GetLabelName(labelType));
-
-        var modifyThreadRequest = new ModifyThreadRequest { AddLabelIds = new List<string> { labelId! } };
-        _gmailService!.Users.Threads.Modify(modifyThreadRequest, _host, emailThread.Id).Execute();
-    }
-
     public EmailThread? GetEmailThread()
     {
         var threadsResponse = GetThreads();
@@ -152,99 +135,5 @@ public partial class GmailApiService(
         if (modifyThreadResponse is not null)
             logger.LogInformation("Thread {threadId} moved successfully.", threadId);
         else logger.LogWarning("Failed to move thread {threadId}", threadId);
-    }
-
-    public List<EmailThread> GetThreadsMessage()
-    {
-        var emails = new List<EmailThread>();
-        var threadsResponse = GetThreads();
-
-        if (threadsResponse?.Threads is null)
-            return [];
-
-        foreach (var thread in threadsResponse.Threads)
-        {
-            var threadDetailsResponse = _gmailService!.Users.Threads.Get(_host, thread.Id).Execute();
-
-            if (threadDetailsResponse?.Messages?.Any() is not true)
-            {
-                logger.LogWarning("Thread ID {threadId} has no messages or failed to retrieve details.", thread.Id);
-                continue;
-            }
-
-            var firstMessage = threadDetailsResponse.Messages.First();
-            var firstEmail = _gmailService!.Users.Messages.Get(_host, firstMessage.Id).Execute();
-
-            if (firstEmail is null)
-            {
-                logger.LogWarning("Failed to retrieve email for thread ID {threadId}. Message is null.", thread.Id);
-                continue;
-            }
-
-            var sender = firstEmail.Payload.Headers?.FirstOrDefault(h => h.Name == "From")?.Value ?? "Unknown Sender";
-            var parsedEmail = sender.ParseEmail();
-            var host = false;
-            if (parsedEmail.Equals(_host, StringComparison.OrdinalIgnoreCase))
-            {
-                logger.LogInformation("Host is the first sender for thread Id {threadId}. Marking as host.", thread.Id);
-                host = true;
-            }
-
-            var subject = firstEmail.Payload.Headers?.FirstOrDefault(h => h.Name == "Subject")?.Value ?? "No Subject";
-            var body = firstEmail.Snippet;
-
-            var email = new EmailThread(thread.Id, subject, body, sender, host);
-            logger.LogInformation("Email found: {threadId} | {subject} | {sender} | {body}", email.Id, email.Subject,
-                email.Sender, email.Body);
-            emails.Add(email);
-        }
-
-        return emails;
-    }
-
-    public bool ThreadShouldAnalyze(EmailThread emailThread)
-    {
-        var threadDetailsRequest = _gmailService!.Users.Threads.Get(_host, emailThread.Id);
-        var threadDetailsResponse = threadDetailsRequest.Execute();
-
-        if (threadDetailsResponse?.Messages?.Any() is not true)
-        {
-            logger.LogWarning("Thread {threadId} has no messages or failed to retrieve details.", emailThread.Id);
-            return false;
-        }
-
-        if (ThreadAnalyzed(threadDetailsResponse))
-        {
-            logger.LogInformation("Thread {threadId} is already analyzed. Skipping", emailThread.Id);
-            return false;
-        }
-
-        if (!emailThread.Host) return true;
-        logger.LogInformation("Host is the creator of the thread {threadId}.", emailThread.Id);
-        return false;
-    }
-
-    public void ArchiveThread(EmailThread emailThread)
-    {
-        if (string.IsNullOrEmpty(emailThread.Id))
-            return;
-
-        List<string>? labelIds = null;
-        if (emailThread.Host)
-            labelIds = new List<string> { GetLabelId(GetLabelName(LabelType.Other))! };
-
-        var modifyThreadRequest = new ModifyThreadRequest
-        {
-            AddLabelIds = labelIds,
-            RemoveLabelIds = new List<string> { "INBOX" }
-        };
-
-        _gmailService!.Users.Threads.Modify(modifyThreadRequest, _host, emailThread.Id).Execute();
-        logger.LogInformation("Thread {threadId} archived successfully.", emailThread);
-    }
-
-    public Task Reply(string to)
-    {
-        throw new NotImplementedException();
     }
 }

@@ -5,7 +5,6 @@ using Google.Apis.Services;
 using Google.Apis.Util.Store;
 using Merrsoft.MerrMail.Domain.Enums;
 using Microsoft.Extensions.Logging;
-using Thread = Google.Apis.Gmail.v1.Data.Thread;
 
 // ReSharper disable once CheckNamespace
 namespace Merrsoft.MerrMail.Infrastructure.Services;
@@ -134,14 +133,6 @@ public partial class GmailApiService
         };
     }
 
-    private bool ThreadAnalyzed(Thread thread)
-    {
-        return thread.Messages?.Any(message => message.LabelIds?.Any(label =>
-            label == GetLabelId("MerrMail: High Priority") ||
-            label == GetLabelId("MerrMail: Low Priority") ||
-            label == GetLabelId("MerrMail: Other")) is true) is true;
-    }
-
     private bool MessageAnalyzed(Message message)
     {
         return message.LabelIds?.Any(label =>
@@ -149,20 +140,4 @@ public partial class GmailApiService
             label == GetLabelId("MerrMail: Low Priority") ||
             label == GetLabelId("MerrMail: Other")) is true;
     }
-
-    // private void MoveThread(Thread thread, LabelType addLabel)
-    // {
-    //     var labelName = GetLabelName(addLabel);
-    //     var labelId = GetLabelId(labelName);
-    //
-    //     var modifyThreadRequest = new ModifyThreadRequest
-    //     {
-    //         AddLabelIds = labelId is not null ? new List<string> { labelId } : null,
-    //         RemoveLabelIds = new List<string> { "INBOX" }
-    //     };
-    //     
-    //     var modifyThreadResponse = _gmailService!.Users.Threads.Modify(modifyThreadRequest, _host, thread.Id).Execute();
-    //     if (modifyThreadResponse is not null) logger.LogInformation("Thread {threadId} moved successfully.", thread.Id);
-    //     else logger.LogWarning("Failed to move thread {threadId}", thread.Id);
-    // }
 }
