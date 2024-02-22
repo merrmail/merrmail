@@ -56,6 +56,10 @@ public partial class GmailApiService(
         return true;
     }
 
+    /// <summary>
+    /// Retrieves a single EmailThread while filtering out unnecessary threads to optimize API usage.
+    /// </summary>
+    /// <returns>An EmailThread that has passed all validation checks, or null if no suitable thread is found.</returns>
     public EmailThread? GetEmailThread()
     {
         var threadsResponse = GetThreads();
@@ -101,6 +105,15 @@ public partial class GmailApiService(
                 continue;
             }
 
+            if (sender.Contains("no-reply"))
+            {
+                logger.LogInformation(
+                    "The sender {senderAddress} on thread {threadId} is identified as a 'no-reply'. Archiving...",
+                    senderAddress, thread.Id);
+                MoveThread(thread.Id, LabelType.Other);
+                continue;
+            }
+
             var subject = firstMessage.Payload.Headers?.FirstOrDefault(h => h.Name == "Subject")?.Value ?? "No Subject";
             var body = firstMessage.Snippet;
 
@@ -130,7 +143,7 @@ public partial class GmailApiService(
             AddLabelIds = labelId is not null ? new List<string> { labelId } : null,
             RemoveLabelIds = new List<string> { "INBOX" }
         };
-        
+
         var modifyThreadResponse = _gmailService!.Users.Threads.Modify(modifyThreadRequest, _host, threadId).Execute();
         if (modifyThreadResponse is not null)
             logger.LogInformation("Thread {threadId} moved successfully.", threadId);
