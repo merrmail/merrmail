@@ -2,119 +2,138 @@ using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Domain.Common;
+using Merrsoft.MerrMail.Domain.Enums;
 using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Domain.Options;
-using Merrsoft.MerrMail.Infrastructure.Helpers;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Merrsoft.MerrMail.Infrastructure.Services;
 
-// TODO: Setup GmailService on start
-public class GmailApiService(
+public partial class GmailApiService(
     ILogger<GmailApiService> logger,
     IOptions<EmailApiOptions> emailApiOptions)
     : IEmailApiService
 {
-    private readonly EmailApiOptions _emailApiOptions = emailApiOptions.Value;
+    private readonly string _host = emailApiOptions.Value.HostAddress;
     private GmailService? _gmailService;
 
-    private void Initialize()
+    public async Task<bool> InitializeAsync()
     {
-        _gmailService ??= GmailApiHelper.GetGmailService(
-            _emailApiOptions.OAuthClientCredentialsFilePath,
-            _emailApiOptions.AccessTokenDirectoryPath);
-    }
-
-    public List<Email> GetUnreadEmails()
-    {
-        Initialize();
-
-        var emails = new List<Email>();
-
-        var listRequest = _gmailService!.Users.Messages.List(_emailApiOptions.HostAddress);
-        listRequest.LabelIds = "INBOX";
-        listRequest.IncludeSpamTrash = false;
-        listRequest.Q = "is:unread";
-
-        var listResponse = listRequest.Execute();
-
-        if (listResponse.Messages is null)
-            return [];
-
-        foreach (var message in listResponse.Messages)
+        try
         {
-            var messageContentRequest =
-                _gmailService.Users.Messages.Get(_emailApiOptions.HostAddress, message.Id);
-            var messageContent = messageContentRequest.Execute();
+            logger.LogInformation("Attempting to get Gmail Service...");
+            _gmailService = await GetGmailServiceAsync();
 
-            if (messageContent is null) continue;
-
-            // TODO: Remove unnecessary variables
-            // TODO: Remove unnecessary Email properties
-            var from = string.Empty;
-            var to = string.Empty;
-            var body = string.Empty;
-            var subject = string.Empty;
-            var date = string.Empty;
-            var mailDateTime = DateTime.Now;
-            var attachments = new List<string>();
-            var id = message.Id;
-
-            foreach (var messageParts in messageContent.Payload.Headers)
+            if (_gmailService is null)
             {
-                switch (messageParts.Name)
-                {
-                    case "From":
-                        from = messageParts.Value;
-                        break;
-                    case "Date":
-                        date = messageParts.Value;
-                        break;
-                    case "Subject":
-                        subject = messageParts.Value;
-                        break;
-                }
+                logger.LogError("Gmail Service is null. Initialization failed.");
+                return false;
             }
 
-            if (messageContent.Payload.Parts is not null && messageContent.Payload.Parts.Count > 0)
-            {
-                var firstPart = messageContent.Payload.Parts[0];
-
-                if (firstPart.Body?.Data != null)
-                {
-                    var data = firstPart.Body.Data;
-                    body = data.ToDecodedString();
-                }
-            }
-
-            // TODO: Decode the body
-            var email = new Email(from, to, body, mailDateTime, attachments, id);
-            emails.Add(email);
-            
-            logger.LogInformation("Email found, (Message Id: {emailId})", email.MessageId);
+            logger.LogInformation("Gmail Service initialized successfully.");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Error getting or initializing Gmail Service: {message}", ex.Message);
+            return false;
         }
 
-        return emails;
-    }
-
-    public Task Reply(string to)
-    {
-        Initialize();
-        throw new NotImplementedException();
-    }
-
-    public void MarkAsRead(string messageId)
-    {
-        Initialize();
-
-        var mods = new ModifyMessageRequest
+        try
         {
-            AddLabelIds = null,
-            RemoveLabelIds = new List<string> { "UNREAD" }
-        };
+            logger.LogInformation("Creating required labels...");
 
-        _gmailService!.Users.Messages.Modify(mods, _emailApiOptions.HostAddress, messageId).Execute();
-        logger.LogInformation("Marked email as read: {messageId}", messageId);
+            CreateLabel("MerrMail: High Priority"); // Red
+            CreateLabel("MerrMail: Low Priority"); // Green
+            CreateLabel("MerrMail: Other"); // Blue
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Error creating required labels: {message}", ex.Message);
+            return false;
+        }
+
+        return true;
+    }
+
+    public EmailThread? GetEmailThread()
+    {
+        var threadsResponse = GetThreads();
+
+        if (threadsResponse?.Threads is null)
+            return null;
+
+        foreach (var thread in threadsResponse.Threads)
+        {
+            var threadRequest = _gmailService!.Users.Threads.Get(_host, thread.Id);
+            var threadResponse = threadRequest.Execute();
+
+            if (threadResponse?.Messages?.Any() is not true)
+            {
+                logger.LogWarning("Thread {threadId} has no messages or failed to retrieve details. Skipping...",
+                    thread.Id);
+                continue;
+            }
+
+            var messageRequest = threadResponse.Messages.First();
+            var firstMessage = _gmailService!.Users.Messages.Get(_host, messageRequest.Id).Execute();
+
+            if (firstMessage is null)
+            {
+                logger.LogWarning("Failed to retrieve first email for thread {threadId}. Skipping...", thread.Id);
+                continue;
+            }
+
+            if (MessageAnalyzed(firstMessage))
+            {
+                logger.LogInformation("First email for thread {threadId} is already analyzed. Archiving...",
+                    thread.Id);
+                MoveThread(thread.Id, LabelType.None);
+                continue;
+            }
+
+            var sender = firstMessage.Payload.Headers?.FirstOrDefault(h => h.Name == "From")?.Value ?? "Unknown Sender";
+            var senderAddress = sender.ParseEmail();
+            if (senderAddress.Equals(_host, StringComparison.OrdinalIgnoreCase))
+            {
+                logger.LogInformation("Host is the first sender for thread {threadId}. Archiving...", thread.Id);
+                MoveThread(thread.Id, LabelType.Other);
+                continue;
+            }
+
+            var subject = firstMessage.Payload.Headers?.FirstOrDefault(h => h.Name == "Subject")?.Value ?? "No Subject";
+            var body = firstMessage.Snippet;
+
+            var email = new EmailThread(thread.Id, subject, body, sender, false);
+            logger.LogInformation("Email found: {threadId} | {subject} | {sender} | {body}.", email.Id, email.Subject,
+                email.Sender, email.Body);
+
+            return email;
+        }
+
+        return null;
+    }
+
+    // TODO: Reply to email thread
+    public void ReplyThread(EmailThread emailThread, string message)
+    {
+        logger.LogInformation("Replied to thread {threadId}.", emailThread.Id);
+    }
+
+    public void MoveThread(string threadId, LabelType addLabel)
+    {
+        var labelName = GetLabelName(addLabel);
+        var labelId = GetLabelId(labelName);
+
+        var modifyThreadRequest = new ModifyThreadRequest
+        {
+            AddLabelIds = labelId is not null ? new List<string> { labelId } : null,
+            RemoveLabelIds = new List<string> { "INBOX" }
+        };
+        
+        var modifyThreadResponse = _gmailService!.Users.Threads.Modify(modifyThreadRequest, _host, threadId).Execute();
+        if (modifyThreadResponse is not null)
+            logger.LogInformation("Thread {threadId} moved successfully.", threadId);
+        else logger.LogWarning("Failed to move thread {threadId}", threadId);
     }
 }

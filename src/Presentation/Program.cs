@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Application.Services;
 using Merrsoft.MerrMail.Domain.Options;
-using Merrsoft.MerrMail.Infrastructure.External;
 using Merrsoft.MerrMail.Infrastructure.Services;
 using Serilog;
 using Serilog.Events;
@@ -21,14 +20,13 @@ try
     Log.Information("Configuring Services...");
 
     var builder = Host.CreateApplicationBuilder(args);
-    
+
     builder.Services.AddSerilog();
     builder.Services.AddHttpClient();
-    
+
     builder.Services.AddHostedService<MerrMailWorker>();
 
     builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
-    builder.Services.AddSingleton<IOAuthClientCredentialsReader, GoogleOAuthClientCredentialsReader>();
 
     #region Application Options
     
@@ -59,13 +57,13 @@ try
         .Validate(options => Directory.Exists(options.UniversalSentenceEncoderDirectoryPath),
             $"{nameof(TensorFlowBindingOptions.UniversalSentenceEncoderDirectoryPath)} does not exists")
         .ValidateOnStart();
-    
+
     #endregion
 
     var host = builder.Build();
-    
+
     Log.Information("Services Configured!");
-    
+
     host.Run(); // Go to Application.Services.MerrMailWorker to see the background service that holds everything together
 }
 catch (Exception ex)

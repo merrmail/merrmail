@@ -1,10 +1,13 @@
+using System.Reflection.Emit;
+using Merrsoft.MerrMail.Domain.Enums;
 using Merrsoft.MerrMail.Domain.Models;
 
 namespace Merrsoft.MerrMail.Application.Contracts;
 
 public interface IEmailApiService
 {
-    List<Email> GetUnreadEmails();
-    Task Reply(string to);
-    void MarkAsRead(string messageId);
+    Task<bool> InitializeAsync();
+    EmailThread? GetEmailThread();
+    void ReplyThread(EmailThread emailThread, string message);
+    void MoveThread(string threadId, LabelType addLabel);
 }
