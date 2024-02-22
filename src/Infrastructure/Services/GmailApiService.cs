@@ -120,7 +120,7 @@ public partial class GmailApiService(
             var subject = firstMessage.Payload.Headers?.FirstOrDefault(h => h.Name == "Subject")?.Value ?? "No Subject";
             var body = firstMessage.Snippet;
 
-            var email = new EmailThread(thread.Id, subject, body, sender, false);
+            var email = new EmailThread(thread.Id, subject, body, sender);
             logger.LogInformation("Email found: {threadId} | {subject} | {sender} | {body}.", email.Id, email.Subject,
                 email.Sender, email.Body);
 
@@ -131,7 +131,7 @@ public partial class GmailApiService(
     }
 
     // TODO: Reply to email thread
-    public void ReplyThread(EmailThread emailThread, string message)
+    public bool ReplyThread(EmailThread emailThread, string message)
     {
         const int gmailSmtpPort = 587;
         var smtpClient = new SmtpClient("smtp.gmail.com", gmailSmtpPort);
@@ -150,10 +150,12 @@ public partial class GmailApiService(
         {
             smtpClient.Send(mailMessage);
             logger.LogInformation("Replied to thread {threadId}.", emailThread.Id);
+            return true;
         }
         catch (Exception ex)
         {
             logger.LogError("Error replying to thread {threadId}: {message}", emailThread.Id, ex.Message);
+            return false;
         }
     }
 

@@ -49,8 +49,9 @@ public class MerrMailWorker(
 
             const LabelType labelType = LabelType.Low;
             var replyMessage = Guid.NewGuid().ToString();
-            emailApiService.ReplyThread(emailThread, replyMessage);
-            emailApiService.MoveThread(emailThread.Id, labelType);
+            var replied = emailApiService.ReplyThread(emailThread, replyMessage);
+            if (replied) emailApiService.MoveThread(emailThread.Id, labelType);
+            else logger.LogWarning("Thread {threadId} won't be moved.", emailThread.Id);
 
             await Task.Delay(1000, stoppingToken);
             // break; /* <== Comment this when you want to test the loop */
