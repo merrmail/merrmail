@@ -27,9 +27,10 @@ try
     builder.Services.AddHostedService<MerrMailWorker>();
 
     builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
+    builder.Services.AddSingleton<IAiIntegrationService, AiIntegrationService>();
 
     #region Application Options
-    
+
     builder.Services
         .AddOptions<EmailApiOptions>()
         .BindConfiguration($"{nameof(EmailApiOptions)}")

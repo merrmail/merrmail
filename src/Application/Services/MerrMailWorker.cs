@@ -8,6 +8,7 @@ namespace Merrsoft.MerrMail.Application.Services;
 public class MerrMailWorker(
     ILogger<MerrMailWorker> logger,
     IEmailApiService emailApiService,
+    IAiIntegrationService aiIntegrationService,
     HttpClient httpClient)
     : BackgroundService
 {
@@ -24,6 +25,12 @@ public class MerrMailWorker(
         if (!await emailApiService.InitializeAsync())
         {
             logger.LogError("Email API service initialization failed. Aborting startup.");
+            return;
+        }
+
+        if (!aiIntegrationService.Initialize())
+        {
+            logger.LogError("AI initialization failed. Aborting startup.");
             return;
         }
 
