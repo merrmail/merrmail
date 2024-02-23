@@ -3,7 +3,7 @@ using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
-using Merrsoft.MerrMail.Domain.Enums;
+using Merrsoft.MerrMail.Domain.Types;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable once CheckNamespace
@@ -49,7 +49,7 @@ public partial class GmailApiService
         }
     }
 
-    private void CreateLabel(string labelName)
+    private bool CreateLabel(string labelName)
     {
         var labelsRequest = _gmailService!.Users.Labels.List(_host);
         var labelsResponse = labelsRequest!.Execute();
@@ -57,7 +57,7 @@ public partial class GmailApiService
         if (labelsResponse?.Labels?.Any(label => label.Name == labelName) is true)
         {
             logger.LogInformation("Label: ({labelName}) already exists. Skipping...", labelName);
-            return;
+            return true;
         }
 
         string backgroundColor, textColor;
@@ -96,9 +96,15 @@ public partial class GmailApiService
         var createdLabel = createLabelRequest.Execute();
 
         if (createdLabel is not null)
+        {
             logger.LogInformation(
                 "Label created: {labelName}, Label ID: {labelId}, BackgroundColor: {backgroundColor}, TextColor: {textColor}",
                 createdLabel.Name, createdLabel.Id, backgroundColor, textColor);
+            return true;
+        }
+
+        logger.LogError("Failed to create label {labelName}.", labelName);
+        return false;
     }
 
     private string? GetLabelId(string? labelName)

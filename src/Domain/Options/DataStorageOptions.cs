@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Merrsoft.MerrMail.Domain.Enums;
+using Merrsoft.MerrMail.Domain.Types;
 
 namespace Merrsoft.MerrMail.Domain.Options;
 

@@ -1,10 +1,12 @@
+using System.Net;
+using System.Net.Mail;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Domain.Common;
-using Merrsoft.MerrMail.Domain.Enums;
 using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Domain.Options;
+using Merrsoft.MerrMail.Domain.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -16,6 +18,7 @@ public partial class GmailApiService(
     : IEmailApiService
 {
     private readonly string _host = emailApiOptions.Value.HostAddress;
+    private readonly string _password = emailApiOptions.Value.HostPassword;
     private GmailService? _gmailService;
 
     public async Task<bool> InitializeAsync()
@@ -43,9 +46,10 @@ public partial class GmailApiService(
         {
             logger.LogInformation("Creating required labels...");
 
-            CreateLabel("MerrMail: High Priority"); // Red
-            CreateLabel("MerrMail: Low Priority"); // Green
-            CreateLabel("MerrMail: Other"); // Blue
+            if (!CreateLabel("MerrMail: High Priority") || // Red
+                !CreateLabel("MerrMail: Low Priority") || // Green
+                !CreateLabel("MerrMail: Other")) // Blue
+                return false;
         }
         catch (Exception ex)
         {
@@ -56,6 +60,10 @@ public partial class GmailApiService(
         return true;
     }
 
+    /// <summary>
+    /// Retrieves a single EmailThread while filtering out unnecessary threads to optimize API usage.
+    /// </summary>
+    /// <returns>An EmailThread that has passed all validation checks, or null if no suitable thread is found.</returns>
     public EmailThread? GetEmailThread()
     {
         var threadsResponse = GetThreads();
@@ -101,10 +109,19 @@ public partial class GmailApiService(
                 continue;
             }
 
+            if (sender.Contains("no-reply"))
+            {
+                logger.LogInformation(
+                    "The sender {senderAddress} on thread {threadId} is identified as a 'no-reply'. Archiving...",
+                    senderAddress, thread.Id);
+                MoveThread(thread.Id, LabelType.Other);
+                continue;
+            }
+
             var subject = firstMessage.Payload.Headers?.FirstOrDefault(h => h.Name == "Subject")?.Value ?? "No Subject";
             var body = firstMessage.Snippet;
 
-            var email = new EmailThread(thread.Id, subject, body, sender, false);
+            var email = new EmailThread(thread.Id, subject, body, sender);
             logger.LogInformation("Email found: {threadId} | {subject} | {sender} | {body}.", email.Id, email.Subject,
                 email.Sender, email.Body);
 
@@ -114,10 +131,33 @@ public partial class GmailApiService(
         return null;
     }
 
-    // TODO: Reply to email thread
-    public void ReplyThread(EmailThread emailThread, string message)
+    // TODO: Move this method to a different service
+    public bool ReplyThread(EmailThread emailThread, string message)
     {
-        logger.LogInformation("Replied to thread {threadId}.", emailThread.Id);
+        const int gmailSmtpPort = 587;
+        var smtpClient = new SmtpClient("smtp.gmail.com", gmailSmtpPort);
+        smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
+        smtpClient.EnableSsl = true;
+        smtpClient.UseDefaultCredentials = false;
+        smtpClient.Credentials = new NetworkCredential(_host, _password);
+
+        using var mailMessage = new MailMessage(_host, emailThread.Sender);
+        mailMessage.Subject = "Re: " + emailThread.Subject;
+        mailMessage.Headers.Add("In-Reply-To", emailThread.Id);
+        mailMessage.Headers.Add("References", emailThread.Id);
+        mailMessage.Body = message;
+
+        try
+        {
+            smtpClient.Send(mailMessage);
+            logger.LogInformation("Replied to thread {threadId}.", emailThread.Id);
+            return true;
+        }
+        catch (Exception ex)
+        {
+            logger.LogError("Error replying to thread {threadId}: {message}", emailThread.Id, ex.Message);
+            return false;
+        }
     }
 
     public void MoveThread(string threadId, LabelType addLabel)
@@ -130,7 +170,7 @@ public partial class GmailApiService(
             AddLabelIds = labelId is not null ? new List<string> { labelId } : null,
             RemoveLabelIds = new List<string> { "INBOX" }
         };
-        
+
         var modifyThreadResponse = _gmailService!.Users.Threads.Modify(modifyThreadRequest, _host, threadId).Execute();
         if (modifyThreadResponse is not null)
             logger.LogInformation("Thread {threadId} moved successfully.", threadId);

@@ -40,6 +40,8 @@ try
         .Validate(options =>
                 new EmailAddressAttribute().IsValid(options.HostAddress),
             $"{nameof(EmailApiOptions.HostAddress)} is not a valid email")
+        .Validate(options => !string.IsNullOrEmpty(options.HostPassword),
+            $"Invalid {nameof(EmailApiOptions.HostPassword)}")
         .ValidateOnStart();
 
     // TODO: Change [Required] to validating if data actually exists
