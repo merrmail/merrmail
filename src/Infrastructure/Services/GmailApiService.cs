@@ -4,9 +4,9 @@ using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Domain.Common;
-using Merrsoft.MerrMail.Domain.Enums;
 using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Domain.Options;
+using Merrsoft.MerrMail.Domain.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
@@ -46,9 +46,10 @@ public partial class GmailApiService(
         {
             logger.LogInformation("Creating required labels...");
 
-            CreateLabel("MerrMail: High Priority"); // Red
-            CreateLabel("MerrMail: Low Priority"); // Green
-            CreateLabel("MerrMail: Other"); // Blue
+            if (!CreateLabel("MerrMail: High Priority") || // Red
+                !CreateLabel("MerrMail: Low Priority") || // Green
+                !CreateLabel("MerrMail: Other")) // Blue
+                return false;
         }
         catch (Exception ex)
         {
@@ -130,7 +131,7 @@ public partial class GmailApiService(
         return null;
     }
 
-    // TODO: Reply to email thread
+    // TODO: Move this method to a different service
     public bool ReplyThread(EmailThread emailThread, string message)
     {
         const int gmailSmtpPort = 587;

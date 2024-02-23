@@ -1,4 +1,4 @@
-﻿namespace Merrsoft.MerrMail.Domain.Enums;
+﻿namespace Merrsoft.MerrMail.Domain.Types;
 
 public enum LabelType
 {

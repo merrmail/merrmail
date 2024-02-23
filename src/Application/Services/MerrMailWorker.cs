@@ -1,5 +1,5 @@
 using Merrsoft.MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Domain.Enums;
+using Merrsoft.MerrMail.Domain.Types;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
