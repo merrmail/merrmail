@@ -9,12 +9,13 @@ using Python.Runtime;
 namespace Merrsoft.MerrMail.Infrastructure.Services;
 
 public class AiIntegrationService(
-    IOptions<TensorFlowBindingOptions> tensorFlowBindingOptions,
+    IOptions<AiIntegrationOptions> aiIntegrationOptions,
     ILogger<AiIntegrationService> logger) : IAiIntegrationService
 {
     private dynamic? _scope;
     private dynamic? _embed;
-    private readonly string _dll = tensorFlowBindingOptions.Value.PythonDllFilePath;
+    private readonly string _dll = aiIntegrationOptions.Value.PythonDllFilePath;
+    private readonly float _acceptedScore = aiIntegrationOptions.Value.AcceptanceScore;
 
     // Since _scope is dynamic, this unused variable can be used to check what you can do with the _scope
 #pragma warning disable CS0169 // Field is never used
@@ -22,7 +23,7 @@ public class AiIntegrationService(
 #pragma warning restore CS0169 // Field is never used
 
     private readonly string universal_sentence_encoder_path =
-        tensorFlowBindingOptions.Value.UniversalSentenceEncoderDirectoryPath;
+        aiIntegrationOptions.Value.UniversalSentenceEncoderDirectoryPath;
 
     public bool Initialize()
     {
@@ -73,10 +74,12 @@ public class AiIntegrationService(
         return true;
     }
 
-    public float GetSimilarityScore(string first, string second)
+    // There is a problem in the python script where the cosine similarity score is reversed.
+    public bool IsSimilar(string first, string second)
     {
         var cosine_similarity = _scope!.calculate_cosine_similarity(_embed, first, second);
         var cosine = cosine_similarity.As<float>();
-        return cosine;
+
+        return cosine < _acceptedScore;
     }
 }

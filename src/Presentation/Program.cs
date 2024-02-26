@@ -2,7 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Application.Services;
 using Merrsoft.MerrMail.Domain.Options;
+using Merrsoft.MerrMail.Infrastructure.Factories;
 using Merrsoft.MerrMail.Infrastructure.Services;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
 
@@ -21,14 +23,6 @@ try
     
     var builder = Host.CreateApplicationBuilder(args);
 
-    builder.Services.AddSerilog();
-    builder.Services.AddHttpClient();
-
-    builder.Services.AddHostedService<MerrMailWorker>();
-
-    builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
-    builder.Services.AddSingleton<IAiIntegrationService, AiIntegrationService>();
-
     #region Application Options
 
     builder.Services
@@ -45,7 +39,6 @@ try
             $"Invalid {nameof(EmailApiOptions.HostPassword)}")
         .ValidateOnStart();
 
-    // TODO: Change [Required] to validating if data actually exists
     builder.Services
         .AddOptions<DataStorageOptions>()
         .BindConfiguration($"{nameof(DataStorageOptions)}")
@@ -53,14 +46,42 @@ try
         .ValidateOnStart();
 
     builder.Services
-        .AddOptions<TensorFlowBindingOptions>()
-        .BindConfiguration($"{nameof(TensorFlowBindingOptions)}")
+        .AddOptions<AiIntegrationOptions>()
+        .BindConfiguration($"{nameof(AiIntegrationOptions)}")
         .Validate(options => File.Exists(options.PythonDllFilePath),
-            $"{nameof(TensorFlowBindingOptions.PythonDllFilePath)} does not exists")
+            $"{nameof(AiIntegrationOptions.PythonDllFilePath)} does not exists")
         .Validate(options => Directory.Exists(options.UniversalSentenceEncoderDirectoryPath),
-            $"{nameof(TensorFlowBindingOptions.UniversalSentenceEncoderDirectoryPath)} does not exists")
+            $"{nameof(AiIntegrationOptions.UniversalSentenceEncoderDirectoryPath)} does not exists")
+        // Our recommended acceptance score is -0.35
+        .Validate(options => options.AcceptanceScore >= -1.0 || options.AcceptanceScore <= 1.0,
+            $"{nameof(AiIntegrationOptions.AcceptanceScore)} should be between -1.0 and 1.0")
         .ValidateOnStart();
 
+    #endregion
+    
+    #region Services
+    
+    builder.Services.AddSerilog();
+    builder.Services.AddHttpClient();
+
+    builder.Services.AddHostedService<MerrMailWorker>();
+
+    builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
+    builder.Services.AddSingleton<IAiIntegrationService, AiIntegrationService>();
+
+    builder.Services.AddSingleton<DataStorageContextFactory>(provider =>
+    {
+        var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+        var dataStorageOptions = provider.GetRequiredService<IOptions<DataStorageOptions>>();
+        return new DataStorageContextFactory(loggerFactory, dataStorageOptions);
+    });
+
+    builder.Services.AddTransient<IDataStorageContext>(provider =>
+    {
+        var factory = provider.GetRequiredService<DataStorageContextFactory>();
+        return factory.CreateDataStorageContext();
+    });
+    
     #endregion
 
     var host = builder.Build();

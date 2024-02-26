@@ -11,7 +11,7 @@ public static partial class StringExtensions
         // TODO: Implement decoder
         return data;
     }
-    
+
     public static string ToEncodedString(this string data)
     {
         return data;

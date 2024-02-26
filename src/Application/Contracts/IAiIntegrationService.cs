@@ -3,5 +3,5 @@
 public interface IAiIntegrationService
 {
     bool Initialize();
-    float GetSimilarityScore(string first, string second);
+    bool IsSimilar(string first, string second);
 }

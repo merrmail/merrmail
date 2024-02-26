@@ -109,7 +109,7 @@ public partial class GmailApiService(
                 continue;
             }
 
-            if (sender.Contains("no-reply"))
+            if (sender.Contains("no") && sender.Contains("reply"))
             {
                 logger.LogInformation(
                     "The sender {senderAddress} on thread {threadId} is identified as a 'no-reply'. Archiving...",
