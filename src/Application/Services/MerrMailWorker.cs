@@ -1,4 +1,5 @@
 using Merrsoft.MerrMail.Application.Contracts;
+using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Domain.Types;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -8,6 +9,7 @@ namespace Merrsoft.MerrMail.Application.Services;
 public class MerrMailWorker(
     ILogger<MerrMailWorker> logger,
     IEmailApiService emailApiService,
+    IAiIntegrationService aiIntegrationService,
     HttpClient httpClient)
     : BackgroundService
 {
@@ -24,6 +26,12 @@ public class MerrMailWorker(
         if (!await emailApiService.InitializeAsync())
         {
             logger.LogError("Email API service initialization failed. Aborting startup.");
+            return;
+        }
+
+        if (!aiIntegrationService.Initialize())
+        {
+            logger.LogError("AI initialization failed. Aborting startup.");
             return;
         }
 
@@ -45,14 +53,38 @@ public class MerrMailWorker(
             }
 
             // TODO: Check if an email is a concern using ML.NET
-            // TODO: Compare email to database using NLP
 
-            const LabelType labelType = LabelType.Low;
-            var replyMessage = Guid.NewGuid().ToString();
-            var replied = emailApiService.ReplyThread(emailThread, replyMessage);
-            if (replied) emailApiService.MoveThread(emailThread.Id, labelType);
-            else logger.LogWarning("Thread {threadId} won't be moved.", emailThread.Id);
+            // TODO: Use a database to store these values
+            var contexts = new List<EmailContext>
+            {
+                new("School uniform stock availability",
+                    "We're still waiting for new uniforms to arrive. But right now, students are allowed to wear casual clothes."),
+                new("Balance payment location",
+                    "You can pay your balance at the cashier in the Main Building. You can also pay it online via email at cashier@university.domain."),
+                new("Reason for slow email response time",
+                    "We apologize for the inconvenience, we're working our way on making an email assistant for a faster email responses from our administrators.")
+            };
 
+            var labelType = LabelType.High;
+            foreach (var context in contexts)
+            {
+                var score = aiIntegrationService.GetSimilarityScore(emailThread.Subject, context.Subject);
+
+                // There is a problem in the python script where the cosine similarity score is reversed.
+                // TODO: Make the accepted score configurable on startup
+                const float acceptedScore = -0.35f;
+                if (score < acceptedScore)
+                {
+                    // TODO: Get the actual reply to the database
+                    labelType = LabelType.Low;
+
+                    emailApiService.ReplyThread(emailThread, context.Response);
+                }
+
+                if (labelType is LabelType.Low) break;
+            }
+
+            emailApiService.MoveThread(emailThread.Id, labelType);
             await Task.Delay(1000, stoppingToken);
             // break; /* <== Comment this when you want to test the loop */
         }
