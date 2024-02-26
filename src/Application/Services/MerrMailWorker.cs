@@ -1,18 +1,23 @@
 using Merrsoft.MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Domain.Models;
+using Merrsoft.MerrMail.Domain.Options;
 using Merrsoft.MerrMail.Domain.Types;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Merrsoft.MerrMail.Application.Services;
 
 public class MerrMailWorker(
     ILogger<MerrMailWorker> logger,
+    IOptions<DataStorageOptions> dataStorageOptions,
     IEmailApiService emailApiService,
     IAiIntegrationService aiIntegrationService,
+    IDataStorageContext dataStorageContext,
     HttpClient httpClient)
     : BackgroundService
 {
+    private readonly string _dataStorageAccess = dataStorageOptions.Value.DataStorageAccess;
+
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Starting validation...");
@@ -54,28 +59,20 @@ public class MerrMailWorker(
 
             // TODO: Check if an email is a concern using ML.NET
 
-            // TODO: Use a database to store these values
-            var contexts = new List<EmailContext>
-            {
-                new("School uniform stock availability",
-                    "We're still waiting for new uniforms to arrive. But right now, students are allowed to wear casual clothes."),
-                new("Balance payment location",
-                    "You can pay your balance at the cashier in the Main Building. You can also pay it online via email at cashier@university.domain."),
-                new("Reason for slow email response time",
-                    "We apologize for the inconvenience, we're working our way on making an email assistant for a faster email responses from our administrators.")
-            };
+            // We don't store email contexts once so the users of this program can still do CRUD operations on the database
+            // We also prefer speed over RAM usage so we're getting all rows instead of iterating each row
+            var contexts = await dataStorageContext.GetEmailContextsAsync(_dataStorageAccess);
 
             var labelType = LabelType.High;
             foreach (var context in contexts)
             {
-                var score = aiIntegrationService.GetSimilarityScore(emailThread.Subject, context.Subject);
+                var score = aiIntegrationService.GetSimilarityScore(emailThread.Subject, context.Concern);
 
                 // There is a problem in the python script where the cosine similarity score is reversed.
                 // TODO: Make the accepted score configurable on startup
                 const float acceptedScore = -0.35f;
                 if (score < acceptedScore)
                 {
-                    // TODO: Get the actual reply to the database
                     labelType = LabelType.Low;
 
                     emailApiService.ReplyThread(emailThread, context.Response);

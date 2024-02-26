@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Application.Services;
 using Merrsoft.MerrMail.Domain.Options;
+using Merrsoft.MerrMail.Infrastructure.External;
 using Merrsoft.MerrMail.Infrastructure.Services;
 using Serilog;
 using Serilog.Events;
@@ -20,14 +21,6 @@ try
     Log.Information("Configuring Services...");
     
     var builder = Host.CreateApplicationBuilder(args);
-
-    builder.Services.AddSerilog();
-    builder.Services.AddHttpClient();
-
-    builder.Services.AddHostedService<MerrMailWorker>();
-
-    builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
-    builder.Services.AddSingleton<IAiIntegrationService, AiIntegrationService>();
 
     #region Application Options
 
@@ -62,6 +55,15 @@ try
         .ValidateOnStart();
 
     #endregion
+    
+    builder.Services.AddSerilog();
+    builder.Services.AddHttpClient();
+
+    builder.Services.AddHostedService<MerrMailWorker>();
+
+    builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
+    builder.Services.AddSingleton<IAiIntegrationService, AiIntegrationService>();
+    builder.Services.AddSingleton<IDataStorageContext, SqliteDataStorageContext>();
 
     var host = builder.Build();
 
