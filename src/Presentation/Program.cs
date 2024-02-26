@@ -18,7 +18,7 @@ try
 
     Log.Information("Welcome to Merr Mail!");
     Log.Information("Configuring Services...");
-
+    
     var builder = Host.CreateApplicationBuilder(args);
 
     builder.Services.AddSerilog();
