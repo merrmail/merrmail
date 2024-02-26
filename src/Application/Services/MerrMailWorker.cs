@@ -45,7 +45,7 @@ public class MerrMailWorker(
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    {
+    { 
         logger.LogInformation("Started reading emails...");
 
         while (!stoppingToken.IsCancellationRequested)
@@ -66,12 +66,8 @@ public class MerrMailWorker(
             var labelType = LabelType.High;
             foreach (var context in contexts)
             {
-                var score = aiIntegrationService.GetSimilarityScore(emailThread.Subject, context.Concern);
-
-                // There is a problem in the python script where the cosine similarity score is reversed.
-                // TODO: Make the accepted score configurable on startup
-                const float acceptedScore = -0.35f;
-                if (score < acceptedScore)
+                var similar = aiIntegrationService.IsSimilar(emailThread.Subject, context.Concern);
+                if (similar)
                 {
                     labelType = LabelType.Low;
 

@@ -46,12 +46,15 @@ try
         .ValidateOnStart();
 
     builder.Services
-        .AddOptions<TensorFlowBindingOptions>()
-        .BindConfiguration($"{nameof(TensorFlowBindingOptions)}")
+        .AddOptions<AiIntegrationOptions>()
+        .BindConfiguration($"{nameof(AiIntegrationOptions)}")
         .Validate(options => File.Exists(options.PythonDllFilePath),
-            $"{nameof(TensorFlowBindingOptions.PythonDllFilePath)} does not exists")
+            $"{nameof(AiIntegrationOptions.PythonDllFilePath)} does not exists")
         .Validate(options => Directory.Exists(options.UniversalSentenceEncoderDirectoryPath),
-            $"{nameof(TensorFlowBindingOptions.UniversalSentenceEncoderDirectoryPath)} does not exists")
+            $"{nameof(AiIntegrationOptions.UniversalSentenceEncoderDirectoryPath)} does not exists")
+        // Our recommended acceptance score is -0.35
+        .Validate(options => options.AcceptanceScore >= -1.0 || options.AcceptanceScore <= 1.0,
+            $"{nameof(AiIntegrationOptions.AcceptanceScore)} should be between -1.0 and 1.0")
         .ValidateOnStart();
 
     #endregion
