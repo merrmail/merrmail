@@ -4,5 +4,4 @@ public enum DataStorageType
 {
     Sqlite,
     Csv,
-    Tsv,
 }

@@ -2,8 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Application.Services;
 using Merrsoft.MerrMail.Domain.Options;
-using Merrsoft.MerrMail.Infrastructure.External;
+using Merrsoft.MerrMail.Infrastructure.Factories;
 using Merrsoft.MerrMail.Infrastructure.Services;
+using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
 
@@ -38,7 +39,6 @@ try
             $"Invalid {nameof(EmailApiOptions.HostPassword)}")
         .ValidateOnStart();
 
-    // TODO: Change [Required] to validating if data actually exists
     builder.Services
         .AddOptions<DataStorageOptions>()
         .BindConfiguration($"{nameof(DataStorageOptions)}")
@@ -56,6 +56,8 @@ try
 
     #endregion
     
+    #region Services
+    
     builder.Services.AddSerilog();
     builder.Services.AddHttpClient();
 
@@ -63,7 +65,21 @@ try
 
     builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
     builder.Services.AddSingleton<IAiIntegrationService, AiIntegrationService>();
-    builder.Services.AddSingleton<IDataStorageContext, SqliteDataStorageContext>();
+
+    builder.Services.AddSingleton<DataStorageContextFactory>(provider =>
+    {
+        var loggerFactory = provider.GetRequiredService<ILoggerFactory>();
+        var dataStorageOptions = provider.GetRequiredService<IOptions<DataStorageOptions>>();
+        return new DataStorageContextFactory(loggerFactory, dataStorageOptions);
+    });
+
+    builder.Services.AddTransient<IDataStorageContext>(provider =>
+    {
+        var factory = provider.GetRequiredService<DataStorageContextFactory>();
+        return factory.CreateDataStorageContext();
+    });
+    
+    #endregion
 
     var host = builder.Build();
 
