@@ -67,7 +67,7 @@ try
     builder.Services.AddHostedService<MerrMailWorker>();
 
     builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
-    builder.Services.AddSingleton<IAiIntegrationService, AiIntegrationService>();
+    builder.Services.AddSingleton<IAiIntegrationService, PythonAiIntegrationService>();
 
     builder.Services.AddSingleton<DataStorageContextFactory>(provider =>
     {

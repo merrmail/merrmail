@@ -70,7 +70,6 @@ public class MerrMailWorker(
                 if (similar)
                 {
                     labelType = LabelType.Low;
-
                     emailApiService.ReplyThread(emailThread, context.Response);
                 }
 
