@@ -6,7 +6,7 @@ using Microsoft.Extensions.Options;
 namespace Merrsoft.MerrMail.Infrastructure.Services;
 
 public partial class PythonAiIntegrationService(
-    ILogger<AiIntegrationService> logger,
+    ILogger<PythonAiIntegrationService> logger,
     IOptions<AiIntegrationOptions> aiIntegrationOptions) : IAiIntegrationService
 {
     private readonly float _acceptedScore = aiIntegrationOptions.Value.AcceptanceScore;
