@@ -1,19 +1,15 @@
 import json
 import logging
 import socket
-import os
-from dotenv import load_dotenv
-from universal_sentence_encoder import load_or_download_universal_sentence_encoder, calculate_cosine_similarity
+from universal_sentence_encoder import load_universal_sentence_encoder, calculate_cosine_similarity
 
-load_dotenv()
-
-path = os.getenv('UNIVERSAL_SENTENCE_ENCODER_PATH')
+path = '/universal_sentence_encoder'
 logging.info(f"Universal Sentence Encoder Path: {path}")
 
-embed = load_or_download_universal_sentence_encoder(path)
+embed = load_universal_sentence_encoder(path)
 
-host = 'localhost'
-port = 63777
+host = '0.0.0.0'
+port = 63778
 
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((host, port))

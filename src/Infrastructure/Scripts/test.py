@@ -1,5 +1,8 @@
 import socket
 import json
+import logging
+
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
 def send_receive_data(ip, port, data):
@@ -17,9 +20,9 @@ def send_receive_data(ip, port, data):
 
 
 server_ip = 'localhost'
-server_port = 63777
+server_port = 63778
 
-json_payload = {"first": "MerrMail", "second": "MerrMail"}
+json_payload = {"first": "Hello MerrMail", "second": "Hi MerrMail"}
 
 result = send_receive_data(server_ip, server_port, json_payload)
 print(f"Received float from server: {result}")

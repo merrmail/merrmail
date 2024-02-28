@@ -13,7 +13,7 @@ public partial class PythonAiIntegrationService
     private static float get_cosine_similarity(string first, string second)
 #pragma warning restore IDE1006 // Naming Styles
     {
-        using var tcp = new TcpClient("localhost", 63777);
+        using var tcp = new TcpClient("localhost", 63778);
         using var network = tcp.GetStream();
         try
         {

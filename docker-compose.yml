@@ -1,0 +1,15 @@
+﻿version: '3'
+
+networks:
+  merrnet:
+    driver: bridge
+
+services:
+  tensorflow:
+    build:
+      context: src/Infrastructure
+      dockerfile: Dockerfile
+    ports:
+      - "63778:63778"
+    networks:
+      - merrnet
