@@ -1,5 +1,3 @@
-using System.Net;
-using System.Net.Mail;
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Merrsoft.MerrMail.Application.Contracts;
@@ -129,35 +127,6 @@ public partial class GmailApiService(
         }
 
         return null;
-    }
-
-    // TODO: Move this method to a different service
-    public bool ReplyThread(EmailThread emailThread, string message)
-    {
-        const int gmailSmtpPort = 587;
-        var smtpClient = new SmtpClient("smtp.gmail.com", gmailSmtpPort);
-        smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-        smtpClient.EnableSsl = true;
-        smtpClient.UseDefaultCredentials = false;
-        smtpClient.Credentials = new NetworkCredential(_host, _password);
-
-        using var mailMessage = new MailMessage(_host, emailThread.Sender);
-        mailMessage.Subject = "Re: " + emailThread.Subject;
-        mailMessage.Headers.Add("In-Reply-To", emailThread.Id);
-        mailMessage.Headers.Add("References", emailThread.Id);
-        mailMessage.Body = message;
-
-        try
-        {
-            smtpClient.Send(mailMessage);
-            logger.LogInformation("Replied to thread {threadId}.", emailThread.Id);
-            return true;
-        }
-        catch (Exception ex)
-        {
-            logger.LogError("Error replying to thread {threadId}: {message}", emailThread.Id, ex.Message);
-            return false;
-        }
     }
 
     public void MoveThread(string threadId, LabelType addLabel)

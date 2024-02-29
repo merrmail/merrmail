@@ -11,6 +11,7 @@ public class MerrMailWorker(
     ILogger<MerrMailWorker> logger,
     IOptions<DataStorageOptions> dataStorageOptions,
     IEmailApiService emailApiService,
+    IEmailReplyService emailReplyService,
     IAiIntegrationService aiIntegrationService,
     IDataStorageContext dataStorageContext,
     HttpClient httpClient)
@@ -57,8 +58,6 @@ public class MerrMailWorker(
                 continue;
             }
 
-            // TODO: Check if an email is a concern using ML.NET
-
             // We don't store email contexts once so the users of this program can still do CRUD operations on the database
             // We also prefer speed over RAM usage so we're getting all rows instead of iterating each row
             var contexts = await dataStorageContext.GetEmailContextsAsync(_dataStorageAccess);
@@ -70,7 +69,7 @@ public class MerrMailWorker(
                 if (similar)
                 {
                     labelType = LabelType.Low;
-                    emailApiService.ReplyThread(emailThread, context.Response);
+                    emailReplyService.ReplyThread(emailThread, context.Response);
                 }
 
                 if (labelType is LabelType.Low) break;

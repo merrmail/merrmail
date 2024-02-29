@@ -40,6 +40,12 @@ try
         .ValidateOnStart();
 
     builder.Services
+        .AddOptions<EmailReplyOptions>()
+        .BindConfiguration($"{nameof(EmailReplyOptions)}")
+        .ValidateDataAnnotations()
+        .ValidateOnStart();
+
+    builder.Services
         .AddOptions<DataStorageOptions>()
         .BindConfiguration($"{nameof(DataStorageOptions)}")
         .ValidateDataAnnotations()
@@ -48,7 +54,7 @@ try
     builder.Services
         .AddOptions<AiIntegrationOptions>()
         .BindConfiguration($"{nameof(AiIntegrationOptions)}")
-        // Our recommended acceptance score is -0.35
+        // Our recommended acceptance score is between -0.24 and -0.35
         .Validate(options => options.AcceptanceScore >= -1.0 || options.AcceptanceScore <= 1.0,
             $"{nameof(AiIntegrationOptions.AcceptanceScore)} should be between -1.0 and 1.0")
         .ValidateOnStart();
@@ -63,6 +69,7 @@ try
     builder.Services.AddHostedService<MerrMailWorker>();
 
     builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
+    builder.Services.AddSingleton<IEmailReplyService, SmtpReplyService>();
     builder.Services.AddSingleton<IAiIntegrationService, PythonAiIntegrationService>();
 
     builder.Services.AddSingleton<DataStorageContextFactory>(provider =>
