@@ -1,0 +1,15 @@
+﻿version: '3'
+
+networks:
+  merrnet:
+    driver: bridge
+
+services:
+  tensorflow:
+    image: merrsoft/merrmail-tensorflow:latest
+    ports:
+      - "63778:63778"
+    networks:
+      - merrnet
+    volumes:
+      - ./secrets/universal_sentence_encoder:/universal_sentence_encoder
