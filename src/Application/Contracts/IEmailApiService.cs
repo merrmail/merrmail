@@ -11,6 +11,5 @@ public interface IEmailApiService
     /// </summary>
     /// <returns>An EmailThread that has passed all validation checks, or null if no suitable thread is found.</returns>
     EmailThread? GetEmailThread();
-    bool ReplyThread(EmailThread emailThread, string message);
     void MoveThread(string threadId, LabelType addLabel);
 }

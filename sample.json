@@ -5,6 +5,13 @@
       "Microsoft.Hosting.Lifetime": "Information"
     }
   },
+  "EmailReplyOptions": {
+    "Header": "Greet the sender",
+    "Introduction": "Explain what's going on",
+    "Conclusion": "Outline next steps",
+    "Closing": "Regards",
+    "Signature": "Provide contact information"
+  },
   "EmailApiOptions": {
     "OAuthClientCredentialsFilePath": "/path/to/your/credentials.json",
     "AccessTokenDirectoryPath": "/path/to/your/token_folder",

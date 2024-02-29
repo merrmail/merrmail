@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Application.Services;
 using Merrsoft.MerrMail.Domain.Options;
+using Merrsoft.MerrMail.Domain.Types;
 using Merrsoft.MerrMail.Infrastructure.Factories;
 using Merrsoft.MerrMail.Infrastructure.Services;
 using Microsoft.Extensions.Options;
@@ -40,15 +41,33 @@ try
         .ValidateOnStart();
 
     builder.Services
+        .AddOptions<EmailReplyOptions>()
+        .BindConfiguration($"{nameof(EmailReplyOptions)}")
+        .Validate(options => !string.IsNullOrEmpty(options.Header),
+            $"Invalid {nameof(EmailReplyOptions.Header)}")
+        .Validate(options => !string.IsNullOrEmpty(options.Introduction),
+            $"Invalid {nameof(EmailReplyOptions.Introduction)}")
+        .Validate(options => !string.IsNullOrEmpty(options.Conclusion),
+            $"Invalid {nameof(EmailReplyOptions.Conclusion)}")
+        .Validate(options => !string.IsNullOrEmpty(options.Closing),
+            $"Invalid {nameof(EmailReplyOptions.Closing)}")
+        .Validate(options => !string.IsNullOrEmpty(options.Signature),
+            $"Invalid {nameof(EmailReplyOptions.Signature)}")
+        .ValidateOnStart();
+
+    builder.Services
         .AddOptions<DataStorageOptions>()
         .BindConfiguration($"{nameof(DataStorageOptions)}")
-        .ValidateDataAnnotations()
+        .Validate(options => !string.IsNullOrEmpty(options.DataStorageAccess),
+            $"Invalid {nameof(DataStorageOptions.DataStorageAccess)}")
+        .Validate(options => Enum.IsDefined(typeof(DataStorageType), options.DataStorageType),
+            $"Invalid {nameof(DataStorageOptions.DataStorageType)}")
         .ValidateOnStart();
 
     builder.Services
         .AddOptions<AiIntegrationOptions>()
         .BindConfiguration($"{nameof(AiIntegrationOptions)}")
-        // Our recommended acceptance score is -0.35
+        // Our recommended acceptance score is between -0.24 and -0.35
         .Validate(options => options.AcceptanceScore >= -1.0 || options.AcceptanceScore <= 1.0,
             $"{nameof(AiIntegrationOptions.AcceptanceScore)} should be between -1.0 and 1.0")
         .ValidateOnStart();
@@ -63,6 +82,7 @@ try
     builder.Services.AddHostedService<MerrMailWorker>();
 
     builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
+    builder.Services.AddSingleton<IEmailReplyService, SmtpReplyService>();
     builder.Services.AddSingleton<IAiIntegrationService, PythonAiIntegrationService>();
 
     builder.Services.AddSingleton<DataStorageContextFactory>(provider =>
