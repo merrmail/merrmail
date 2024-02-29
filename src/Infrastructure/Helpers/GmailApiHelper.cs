@@ -28,7 +28,7 @@ public partial class GmailApiService
         return new GmailService(new BaseClientService.Initializer
         {
             HttpClientInitializer = credential,
-            ApplicationName = "Gmail API Sample",
+            ApplicationName = "MerrMail Gmail API",
         });
     }
 
