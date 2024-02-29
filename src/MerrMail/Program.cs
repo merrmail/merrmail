@@ -2,6 +2,7 @@ using System.ComponentModel.DataAnnotations;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Application.Services;
 using Merrsoft.MerrMail.Domain.Options;
+using Merrsoft.MerrMail.Domain.Types;
 using Merrsoft.MerrMail.Infrastructure.Factories;
 using Merrsoft.MerrMail.Infrastructure.Services;
 using Microsoft.Extensions.Options;
@@ -42,13 +43,25 @@ try
     builder.Services
         .AddOptions<EmailReplyOptions>()
         .BindConfiguration($"{nameof(EmailReplyOptions)}")
-        .ValidateDataAnnotations()
+        .Validate(options => !string.IsNullOrEmpty(options.Header),
+            $"Invalid {nameof(EmailReplyOptions.Header)}")
+        .Validate(options => !string.IsNullOrEmpty(options.Introduction),
+            $"Invalid {nameof(EmailReplyOptions.Introduction)}")
+        .Validate(options => !string.IsNullOrEmpty(options.Conclusion),
+            $"Invalid {nameof(EmailReplyOptions.Conclusion)}")
+        .Validate(options => !string.IsNullOrEmpty(options.Closing),
+            $"Invalid {nameof(EmailReplyOptions.Closing)}")
+        .Validate(options => !string.IsNullOrEmpty(options.Signature),
+            $"Invalid {nameof(EmailReplyOptions.Signature)}")
         .ValidateOnStart();
 
     builder.Services
         .AddOptions<DataStorageOptions>()
         .BindConfiguration($"{nameof(DataStorageOptions)}")
-        .ValidateDataAnnotations()
+        .Validate(options => !string.IsNullOrEmpty(options.DataStorageAccess),
+            $"Invalid {nameof(DataStorageOptions.DataStorageAccess)}")
+        .Validate(options => Enum.IsDefined(typeof(DataStorageType), options.DataStorageType),
+            $"Invalid {nameof(DataStorageOptions.DataStorageType)}")
         .ValidateOnStart();
 
     builder.Services
