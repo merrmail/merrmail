@@ -1,14 +1,25 @@
 import os
 import logging
 import tensorflow as tf
+import tensorflow_hub as hub
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 
 
-def load_universal_sentence_encoder(path):
-    embed = tf.saved_model.load(path)
+def load_or_download_universal_sentence_encoder(path):
+    url = "https://tfhub.dev/google/universal-sentence-encoder/4"
+
+    try:
+        embed = tf.saved_model.load(path)
+    except (OSError, tf.errors.NotFoundError):
+        embed = hub.load(url)
+        logging.info("Model downloaded from TensorFlow Hub.")
+
+        tf.saved_model.save(embed, path)
+        logging.info("Model saved to local path.")
+
     return embed
 
 
