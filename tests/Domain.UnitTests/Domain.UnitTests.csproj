@@ -4,6 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <RootNamespace>Merrsoft.MerrMail.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
@@ -11,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="7.0.0-alpha.3" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.59" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
     <PackageReference Include="xunit" Version="2.4.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
