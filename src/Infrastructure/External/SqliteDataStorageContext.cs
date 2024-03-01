@@ -18,7 +18,7 @@ public class SqliteDataStorageContext(ILogger<SqliteDataStorageContext> logger) 
             await using var connection = new SqliteConnection(connectionString);
             await connection.OpenAsync();
 
-            await using var command = new SqliteCommand($"SELECT Concern, Response FROM EmailContext", connection);
+            await using var command = new SqliteCommand($"SELECT Subject, Response FROM EmailContext", connection);
             await using var reader = await command.ExecuteReaderAsync();
 
             while (await reader.ReadAsync())
