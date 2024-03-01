@@ -65,7 +65,7 @@ public class MerrMailWorker(
             var labelType = LabelType.High;
             foreach (var context in contexts)
             {
-                var similar = aiIntegrationService.IsSimilar(emailThread.Subject, context.Concern);
+                var similar = aiIntegrationService.IsSimilar(emailThread.Subject, context.Subject);
                 if (similar)
                 {
                     labelType = LabelType.Low;
