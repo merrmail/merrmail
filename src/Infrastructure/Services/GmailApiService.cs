@@ -16,7 +16,6 @@ public partial class GmailApiService(
     : IEmailApiService
 {
     private readonly string _host = emailApiOptions.Value.HostAddress;
-    private readonly string _password = emailApiOptions.Value.HostPassword;
     private GmailService? _gmailService;
 
     public async Task<bool> InitializeAsync()
