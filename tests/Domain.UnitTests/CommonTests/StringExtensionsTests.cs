@@ -14,7 +14,10 @@ public class StringExtensionsTests
     [InlineData("Invalid Email <invalid.email>", "invalid.email")]
     public void ParseEmail_ShouldExtractEmailAddress(string input, string expectedOutput)
     {
+        // Act
         var result = input.ParseEmail();
+
+        // Assert
         result.Should().Be(expectedOutput);
     }
 }
