@@ -22,12 +22,12 @@ Before you begin, make sure you have the following. Note that all of these are f
 ### 🛠️ Installation
 We will be building from source, so please follow the steps to install MerrMail on your system.
 
-- First, open your terminal and clone this repository:
+- First, open your terminal and clone this repository.
 ```sh
 git clone https://github.com/merrsoft/merrmail.git && cd merrmail
 ```
 
-- Take a look at the docker-compose.yml file. Alternatively, can build the Docker image from source:
+- Take a look at the docker-compose.yml file. Alternatively, can build the Docker image from source.
 ```yml
 version: '3'
 
@@ -48,18 +48,18 @@ services:
       - ./secrets/universal_sentence_encoder:/universal_sentence_encoder
 ```
 
-- Setup our custom container of TensorFlow's Universal Sentence Encoder:
+- Setup our custom container of TensorFlow's Universal Sentence Encoder.
 ```sh
 mkdir -p secrets/universal_sentence_encoder && docker-compose up
 ```
 
-- Navigate to the main entrypoint and compile of the program:
+- Navigate to the main entrypoint of the program.
 ```sh
 cd src/MerrMail 
 ```
 
 ### 🔧 Configuration
-In order to run the program, you must properly set each configuration of MerrMail:
+In order to run the program, you must properly set each configuration of MerrMail.
 
 - `EmailReplyOptions:Header` sets the header format of the email.
 - `EmailReplyOptions:Introduction` sets the first part of the email. then shows the message from the database.
@@ -68,11 +68,11 @@ In order to run the program, you must properly set each configuration of MerrMai
 - `EmailReplyOptions:Signature` is the same.
 
 ```sh
-$ dotnet secrets set EmailReplyOptions:Header "Greet the sender"
-$ dotnet secrets set EmailReplyOptions:Introduction "Explain what's going on"
-$ dotnet secrets set EmailReplyOptions:Conclusion "Outline next steps"
-$ dotnet secrets set EmailReplyOptions:Closing "Regards"
-$ dotnet secrets set EmailReplyOptions:Signature "Provide contact information"
+$ dotnet user-secrets set EmailReplyOptions:Header "Greet the sender"
+$ dotnet user-secrets set EmailReplyOptions:Introduction "Explain what's going on"
+$ dotnet user-secrets set EmailReplyOptions:Conclusion "Outline next steps"
+$ dotnet user-secrets set EmailReplyOptions:Closing "Regards"
+$ dotnet user-secrets set EmailReplyOptions:Signature "Provide contact information"
 ```
 
 <br>
@@ -83,28 +83,29 @@ $ dotnet secrets set EmailReplyOptions:Signature "Provide contact information"
 - `EmailApiOptions:HostPassword` is the 16-digit app password provided by Google. Assuming you already created an app password for your Google account.
 
 ```sh
-$ dotnet secrets set EmailApiOptions:OAuthClientCredentialsFilePath "/path/to/your/credentials.json"
-$ dotnet secrets set EmailApiOptions:AccessTokenDirectoryPath "/path/to/your/token_folder"
-$ dotnet secrets set EmailApiOptions:HostAddress "your.email@sample.domain"
-$ dotnet secrets set EmailApiOptions:HostPassword "your_email_account_app_password"
+$ dotnet user-secrets set EmailApiOptions:OAuthClientCredentialsFilePath "/path/to/your/credentials.json"
+$ dotnet user-secrets set EmailApiOptions:AccessTokenDirectoryPath "/path/to/your/token_folder"
+$ dotnet user-secrets set EmailApiOptions:HostAddress "your.email@sample.domain"
+$ dotnet user-secrets set EmailApiOptions:HostPassword "your_email_account_app_password"
 ```
 
 <br>
 
-- `AiIntegrationOptions:AcceptanceScore -0.35` is the "cosine similarity score" that is accepted by your program (we recommend between -0.24 and -0.35). Doesn't allow values that's not between -1.0 and 1.0.
+- `AiIntegrationOptions:AcceptanceScore -0.35` is the "cosine similarity score" that is accepted by your program (we recommend between -0.24 and -0.35). It doesn't allow values that's not between -1.0 and 1.0.
 ```sh
-dotnet secrets set AiIntegrationOptions:AcceptanceScore -0.35
+dotnet user-secrets set AiIntegrationOptions:AcceptanceScore -0.35
 ```
 
 <br>
 
-- `DataStorageOptions:DataStorageType 0` sets the type of your data storage to SQLite
+- `DataStorageOptions:DataStorageType 0` sets the type of your data storage to SQLite.
 - `DataStorageOptions:DataStorageType 1` sets the data storge type to CSV. Yes, we support CSV! 🎉
 - `DataStorageOptions:DataStorageAccess` is the location of your data storage file. The file type varies depending on what data storage type you chose.
 ```sh
-$ dotnet secrets set DataStorageOptions:DataStorageType 0
-$ dotnet secrets set DataStorageOptions:DataStorageAccess "your_super_secret_data_storage_access"
+$ dotnet user-secrets set DataStorageOptions:DataStorageType 0
+$ dotnet user-secrets set DataStorageOptions:DataStorageAccess "your_super_secret_data_storage_access"
 ```
+
 
 ### 📑 Data Storage
 Below is the format of your data storage depending of which type you chose.
@@ -120,7 +121,7 @@ We recommend wrapping values with quotes,"Wrap ""your quotes"" twice if you want
 - **email-context.db**
 ```sql
 -- Note that this is the create statement, not the content of the file.
--- Use SQLite Browser to create tables
+-- Use SQLite Browser to create tables.
 CREATE TABLE "EmailContext" (
 	"Subject"	TEXT NOT NULL,
 	"Response"	TEXT NOT NULL
@@ -128,10 +129,15 @@ CREATE TABLE "EmailContext" (
 ```
 
 ### 📜 License
-Before using our program. Please refer to our [License](https://github.com/merrsoft/merrmail/blob/main/LICENSE).
+Before using our program, please refer to our [License](https://github.com/merrsoft/merrmail/blob/main/LICENSE).
 
 ### ▶️ Run
-If everything is configured correctly. You can now run the program!
+- You can check if you've properly configured all your app secrets.
+```sh
+dotnet user-secrets list
+```
+
+- If everything is configured correctly, you can now run the program!
 ```sh
 dotnet run
 ```
