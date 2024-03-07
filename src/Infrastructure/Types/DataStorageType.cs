@@ -1,4 +1,4 @@
-﻿namespace Merrsoft.MerrMail.Domain.Types;
+﻿namespace Merrsoft.MerrMail.Infrastructure.Types;
 
 public enum DataStorageType
 {

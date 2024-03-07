@@ -4,5 +4,5 @@ namespace Merrsoft.MerrMail.Application.Contracts;
 
 public interface IDataStorageContext
 {
-    Task<IEnumerable<EmailContext>> GetEmailContextsAsync(string access);
+    Task<IEnumerable<EmailContext>> GetEmailContextsAsync();
 }

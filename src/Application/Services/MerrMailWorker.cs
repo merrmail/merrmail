@@ -1,15 +1,12 @@
 using Merrsoft.MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Domain.Options;
 using Merrsoft.MerrMail.Domain.Types;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace Merrsoft.MerrMail.Application.Services;
 
 public class MerrMailWorker(
     ILogger<MerrMailWorker> logger,
-    IOptions<DataStorageOptions> dataStorageOptions,
     IEmailApiService emailApiService,
     IEmailReplyService emailReplyService,
     IAiIntegrationService aiIntegrationService,
@@ -17,8 +14,6 @@ public class MerrMailWorker(
     HttpClient httpClient)
     : BackgroundService
 {
-    private readonly string _dataStorageAccess = dataStorageOptions.Value.DataStorageAccess;
-
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Starting validation...");
@@ -60,7 +55,7 @@ public class MerrMailWorker(
 
             // We don't store email contexts once so the users of this program can still do CRUD operations on the database
             // We also prefer speed over RAM usage so we're getting all rows instead of iterating each row
-            var contexts = await dataStorageContext.GetEmailContextsAsync(_dataStorageAccess);
+            var contexts = await dataStorageContext.GetEmailContextsAsync();
 
             var labelType = LabelType.High;
             foreach (var context in contexts)

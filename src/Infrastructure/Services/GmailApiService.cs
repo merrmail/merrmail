@@ -3,8 +3,8 @@ using Google.Apis.Gmail.v1.Data;
 using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Domain.Common;
 using Merrsoft.MerrMail.Domain.Models;
-using Merrsoft.MerrMail.Domain.Options;
 using Merrsoft.MerrMail.Domain.Types;
+using Merrsoft.MerrMail.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 

@@ -1,18 +1,22 @@
 ﻿using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Domain.Models;
+using Merrsoft.MerrMail.Infrastructure.Options;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Merrsoft.MerrMail.Infrastructure.External;
 
-public class SqliteDataStorageContext(ILogger<SqliteDataStorageContext> logger) : IDataStorageContext
+public class SqliteDataStorageContext(ILogger<SqliteDataStorageContext> logger, IOptions<DataStorageOptions> dataStorageOptions) : IDataStorageContext
 {
-    public async Task<IEnumerable<EmailContext>> GetEmailContextsAsync(string access)
+    private readonly string _dataStorageAccess = dataStorageOptions.Value.DataStorageAccess;
+
+    public async Task<IEnumerable<EmailContext>> GetEmailContextsAsync()
     {
         try
         {
             logger.LogInformation("Getting email contexts...");
-            var connectionString = $"Data Source=file:{access}";
+            var connectionString = $"Data Source=file:{_dataStorageAccess}";
             var emailContexts = new List<EmailContext>();
 
             await using var connection = new SqliteConnection(connectionString);

@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Merrsoft.MerrMail.Domain.Options;
+using Merrsoft.MerrMail.Infrastructure.Options;
 using Merrsoft.MerrMail.Infrastructure.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
