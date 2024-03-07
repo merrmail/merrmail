@@ -1,6 +1,6 @@
 ﻿using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Domain.Models;
-using Merrsoft.MerrMail.Domain.Options;
+using Merrsoft.MerrMail.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic.FileIO;
