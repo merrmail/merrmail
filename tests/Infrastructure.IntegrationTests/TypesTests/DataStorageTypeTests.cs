@@ -1,6 +1,7 @@
-﻿using Merrsoft.MerrMail.Domain.Types;
+﻿using FluentAssertions;
+using Merrsoft.MerrMail.Infrastructure.Types;
 
-namespace Merrsoft.MerrMail.Domain.UnitTests.TypesTests;
+namespace Infrastructure.IntegrationTests.TypesTests;
 
 public class DataStorageTypeTests
 {

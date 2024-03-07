@@ -1,4 +1,4 @@
-﻿using Merrsoft.MerrMail.Domain.Types;
+﻿using Merrsoft.MerrMail.Infrastructure.Types;
 
 namespace Merrsoft.MerrMail.Infrastructure.Options;
 
