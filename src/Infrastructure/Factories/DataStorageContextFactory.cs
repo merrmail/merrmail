@@ -17,10 +17,10 @@ public class DataStorageContextFactory(ILoggerFactory loggerFactory, IOptions<Da
         {
             case DataStorageType.Sqlite:
                 var sqliteLogger = loggerFactory.CreateLogger<SqliteDataStorageContext>();
-                return new SqliteDataStorageContext(sqliteLogger);
+                return new SqliteDataStorageContext(sqliteLogger, dataStorageOptions);
             case DataStorageType.Csv:
                 var csvLogger = loggerFactory.CreateLogger<CsvDataStorageContext>();
-                return new CsvDataStorageContext(csvLogger);
+                return new CsvDataStorageContext(csvLogger, dataStorageOptions);
             default:
                 throw new NotSupportedException($"Data storage type {_dataStorageType} is not supported.");
         }

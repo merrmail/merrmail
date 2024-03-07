@@ -73,7 +73,7 @@ try
         .ValidateOnStart();
 
     #endregion
-    
+
     #region Services
     
     builder.Services.AddSerilog();

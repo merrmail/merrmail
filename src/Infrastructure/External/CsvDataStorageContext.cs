@@ -1,20 +1,24 @@
 ﻿using Merrsoft.MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Domain.Models;
+using Merrsoft.MerrMail.Domain.Options;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic.FileIO;
 
 namespace Merrsoft.MerrMail.Infrastructure.External;
 
-public class CsvDataStorageContext(ILogger<CsvDataStorageContext> logger) : IDataStorageContext
+public class CsvDataStorageContext(ILogger<CsvDataStorageContext> logger, IOptions<DataStorageOptions> dataStorageOptions) : IDataStorageContext
 {
-    public async Task<IEnumerable<EmailContext>> GetEmailContextsAsync(string access)
+    private readonly string _dataStorageAccess = dataStorageOptions.Value.DataStorageAccess;
+    
+    public async Task<IEnumerable<EmailContext>> GetEmailContextsAsync()
     {
         try
         {
             var emailContexts = new List<EmailContext>();
             string csvData;
 
-            using (var reader = new StreamReader(access))
+            using (var reader = new StreamReader(_dataStorageAccess))
             {
                 csvData = await reader.ReadToEndAsync();
             }
