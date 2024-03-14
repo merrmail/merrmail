@@ -9,7 +9,7 @@ public class MerrMailWorker(
     ILogger<MerrMailWorker> logger,
     IEmailApiService emailApiService,
     IEmailReplyService emailReplyService,
-    IAiIntegrationService aiIntegrationService,
+    IEmailAnalyzerService emailAnalyzerService,
     IDataStorageContext dataStorageContext,
     HttpClient httpClient)
     : BackgroundService
@@ -30,7 +30,7 @@ public class MerrMailWorker(
             return;
         }
 
-        if (!aiIntegrationService.Initialize())
+        if (!emailAnalyzerService.Initialize())
         {
             logger.LogError("AI initialization failed. Aborting startup.");
             return;
@@ -60,7 +60,7 @@ public class MerrMailWorker(
             var labelType = LabelType.High;
             foreach (var context in contexts)
             {
-                var similar = aiIntegrationService.IsSimilar(emailThread.Subject, context.Subject);
+                var similar = emailAnalyzerService.IsSimilar(emailThread.Subject, context.Subject);
                 if (similar)
                 {
                     labelType = LabelType.Low;

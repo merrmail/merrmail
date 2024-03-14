@@ -1,6 +1,6 @@
 ﻿namespace Merrsoft.MerrMail.Application.Contracts;
 
-public interface IAiIntegrationService
+public interface IEmailAnalyzerService
 {
     bool Initialize();
     bool IsSimilar(string first, string second);

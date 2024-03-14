@@ -7,7 +7,7 @@ using System.Text.Json;
 // ReSharper disable once CheckNamespace
 namespace Merrsoft.MerrMail.Infrastructure.Services;
 
-public partial class PythonAiIntegrationService
+public partial class TensorFlowEmailAnalyzerService
 {
 #pragma warning disable IDE1006 // Naming Styles
     private static float get_cosine_similarity(string first, string second)

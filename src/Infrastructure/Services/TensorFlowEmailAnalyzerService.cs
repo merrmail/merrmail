@@ -5,9 +5,9 @@ using Microsoft.Extensions.Options;
 
 namespace Merrsoft.MerrMail.Infrastructure.Services;
 
-public partial class PythonAiIntegrationService(
-    ILogger<PythonAiIntegrationService> logger,
-    IOptions<AiIntegrationOptions> aiIntegrationOptions) : IAiIntegrationService
+public partial class TensorFlowEmailAnalyzerService(
+    ILogger<TensorFlowEmailAnalyzerService> logger,
+    IOptions<AiIntegrationOptions> aiIntegrationOptions) : IEmailAnalyzerService
 {
     private readonly float _acceptedScore = aiIntegrationOptions.Value.AcceptanceScore;
 

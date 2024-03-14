@@ -21,7 +21,7 @@ try
 
     Log.Information("Welcome to Merr Mail!");
     Log.Information("Configuring Services...");
-    
+
     var builder = Host.CreateApplicationBuilder(args);
 
     #region Application Options
@@ -83,7 +83,7 @@ try
 
     builder.Services.AddSingleton<IEmailApiService, GmailApiService>();
     builder.Services.AddSingleton<IEmailReplyService, SmtpReplyService>();
-    builder.Services.AddSingleton<IAiIntegrationService, PythonAiIntegrationService>();
+    builder.Services.AddSingleton<IEmailAnalyzerService, TensorFlowEmailAnalyzerService>();
 
     builder.Services.AddSingleton<DataStorageContextFactory>(provider =>
     {
