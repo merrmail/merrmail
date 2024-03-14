@@ -7,7 +7,7 @@ namespace Merrsoft.MerrMail.Infrastructure.Services;
 
 public partial class TensorFlowEmailAnalyzerService(
     ILogger<TensorFlowEmailAnalyzerService> logger,
-    IOptions<AiIntegrationOptions> aiIntegrationOptions) : IEmailAnalyzerService
+    IOptions<EmailAnalyzerOptions> aiIntegrationOptions) : IEmailAnalyzerService
 {
     private readonly float _acceptedScore = aiIntegrationOptions.Value.AcceptanceScore;
 

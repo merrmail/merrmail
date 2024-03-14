@@ -13,7 +13,7 @@ public class TensorFlowEmailAnalyzerServiceTests
     {
         // Arrange
         var logger = new Logger<TensorFlowEmailAnalyzerService>(new LoggerFactory());
-        var aiIntegrationOptions = Options.Create(new AiIntegrationOptions { AcceptanceScore = -1.0f });
+        var aiIntegrationOptions = Options.Create(new EmailAnalyzerOptions { AcceptanceScore = -1.0f });
         var pythonAiIntegrationService = new TensorFlowEmailAnalyzerService(logger, aiIntegrationOptions);
 
         // Act
@@ -30,7 +30,7 @@ public class TensorFlowEmailAnalyzerServiceTests
     {
         // Arrange
         var logger = new Logger<TensorFlowEmailAnalyzerService>(new LoggerFactory());
-        var aiIntegrationOptions = Options.Create(new AiIntegrationOptions { AcceptanceScore = -0.5f });
+        var aiIntegrationOptions = Options.Create(new EmailAnalyzerOptions { AcceptanceScore = -0.5f });
         var pythonAiIntegrationService = new TensorFlowEmailAnalyzerService(logger, aiIntegrationOptions);
 
         // Act

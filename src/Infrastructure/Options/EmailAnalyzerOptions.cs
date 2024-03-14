@@ -1,6 +1,6 @@
 ﻿namespace Merrsoft.MerrMail.Infrastructure.Options;
 
-public class AiIntegrationOptions
+public class EmailAnalyzerOptions
 {
     public required float AcceptanceScore { get; init; }
 }
