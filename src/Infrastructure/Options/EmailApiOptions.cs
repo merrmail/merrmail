@@ -2,8 +2,8 @@
 
 public class EmailApiOptions
 {
-    public required string OAuthClientCredentialsFilePath { get; set; }
-    public required string AccessTokenDirectoryPath { get; set; }
-    public required string HostAddress { get; set; }
-    public required string HostPassword { get; set; }
+    public required string OAuthClientCredentialsFilePath { get; init; }
+    public required string AccessTokenDirectoryPath { get; init; }
+    public required string HostAddress { get; init; }
+    public required string HostPassword { get; init; }
 }
