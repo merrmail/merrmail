@@ -32,7 +32,7 @@ public class MerrMailWorker(
 
         if (!emailAnalyzerService.Initialize())
         {
-            logger.LogError("AI initialization failed. Aborting startup.");
+            logger.LogError("Email Analyzer Service initialization failed. Aborting startup.");
             return;
         }
 
@@ -56,20 +56,15 @@ public class MerrMailWorker(
             // We don't store email contexts once so the users of this program can still do CRUD operations on the database
             // We also prefer speed over RAM usage so we're getting all rows instead of iterating each row
             var contexts = await dataStorageContext.GetEmailContextsAsync();
-
             var labelType = LabelType.High;
-            foreach (var context in contexts)
+            
+            var reply = emailAnalyzerService.GetEmailReply(emailThread.Subject, contexts);
+            if (reply is not null)
             {
-                var similar = emailAnalyzerService.IsSimilar(emailThread.Subject, context.Subject);
-                if (similar)
-                {
-                    labelType = LabelType.Low;
-                    emailReplyService.ReplyThread(emailThread, context.Response);
-                }
-
-                if (labelType is LabelType.Low) break;
+                emailReplyService.ReplyThread(emailThread, reply);
+                labelType = LabelType.Low;
             }
-
+            
             emailApiService.MoveThread(emailThread.Id, labelType);
             await Task.Delay(1000, stoppingToken);
             // break; /* <== Comment this when you want to test the loop */

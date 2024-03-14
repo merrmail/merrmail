@@ -9,8 +9,9 @@ namespace Merrsoft.MerrMail.Infrastructure.Services;
 
 public partial class TensorFlowEmailAnalyzerService
 {
+    // This indicates that it's using Python to get similarity score
 #pragma warning disable IDE1006 // Naming Styles
-    private static float get_cosine_similarity(string first, string second)
+    private static float get_similarity_score(string first, string second)
 #pragma warning restore IDE1006 // Naming Styles
     {
         using var tcp = new TcpClient("localhost", 63778);
@@ -28,7 +29,10 @@ public partial class TensorFlowEmailAnalyzerService
             var response_json = Encoding.UTF8.GetString(buffer, 0, bytes_read);
 
             var response = JsonSerializer.Deserialize<float>(response_json);
-            return response;
+            
+            // The cosine similarity score provided by TensorFlow is in negative value so we reverse the sign
+            var fixedScore = Math.Abs(response); 
+            return fixedScore;
         }
         catch
         {

@@ -1,4 +1,5 @@
 ﻿using Merrsoft.MerrMail.Application.Contracts;
+using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -7,18 +8,18 @@ namespace Merrsoft.MerrMail.Infrastructure.Services;
 
 public partial class TensorFlowEmailAnalyzerService(
     ILogger<TensorFlowEmailAnalyzerService> logger,
-    IOptions<EmailAnalyzerOptions> aiIntegrationOptions) : IEmailAnalyzerService
+    IOptions<EmailAnalyzerOptions> emailAnalyzerOptions) : IEmailAnalyzerService
 {
-    private readonly float _acceptedScore = aiIntegrationOptions.Value.AcceptanceScore;
+    private readonly float _acceptedScore = emailAnalyzerOptions.Value.AcceptanceScore;
 
     public bool Initialize()
     {
         try
         {
             const string merrsoft = "Merrsoft";
-            var cosine = get_cosine_similarity(merrsoft, merrsoft);
-            
-            const double maxSimilarity = -1.0;
+            var cosine = get_similarity_score(merrsoft, merrsoft);
+
+            const double maxSimilarity = 1.0;
             const double tolerance = 1e-15;
             if (Math.Abs(cosine - maxSimilarity) > tolerance)
             {
@@ -28,23 +29,38 @@ public partial class TensorFlowEmailAnalyzerService(
                 return false;
             }
 
-            logger.LogInformation("Python Initialized!");
+            logger.LogInformation("TensorFlow Initialized!");
 
             return true;
         }
         catch (Exception ex)
         {
-            logger.LogCritical("Cannot initialize Python AI: {message}", ex.Message);
+            logger.LogCritical("Cannot initialize TensorFlow: {message}", ex.Message);
             return false;
         }
     }
 
-    public bool IsSimilar(string first, string second)
+    public string? GetEmailReply(string subject, IEnumerable<EmailContext> emailContexts)
     {
-        logger.LogInformation("Getting cosine similarity score of {first} | {second}", first, second);
-        var cosine = get_cosine_similarity(first, second);
+        string? reply = null;
+        var highestCosine = 0f;
 
-        logger.LogInformation("Received a cosine similarity score of {cosine}.", cosine);
-        return cosine < _acceptedScore;
+        foreach (var emailContext in emailContexts)
+        {
+            logger.LogInformation("Getting similarity score of {first} | {second}.", subject,
+                emailContext.Subject);
+            var cosine = get_similarity_score(subject, emailContext.Subject);
+            logger.LogInformation("Received a similarity score of {cosine}.", cosine);
+
+            if (cosine < highestCosine) continue;
+
+            highestCosine = cosine;
+            reply = emailContext.Response;
+        }
+
+        if (highestCosine > _acceptedScore) return reply;
+
+        logger.LogInformation("No similar email found.");
+        return null;
     }
 }

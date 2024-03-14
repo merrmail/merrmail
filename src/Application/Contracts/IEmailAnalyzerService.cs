@@ -1,7 +1,9 @@
-﻿namespace Merrsoft.MerrMail.Application.Contracts;
+﻿using Merrsoft.MerrMail.Domain.Models;
+
+namespace Merrsoft.MerrMail.Application.Contracts;
 
 public interface IEmailAnalyzerService
 {
     bool Initialize();
-    bool IsSimilar(string first, string second);
+    string? GetEmailReply(string email, IEnumerable<EmailContext> emailContexts);
 }
