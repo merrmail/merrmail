@@ -67,9 +67,9 @@ try
     builder.Services
         .AddOptions<EmailAnalyzerOptions>()
         .BindConfiguration($"{nameof(EmailAnalyzerOptions)}")
-        // Our recommended acceptance score is between -0.24 and -0.35
-        .Validate(options => options.AcceptanceScore >= -1.0 || options.AcceptanceScore <= 1.0,
-            $"{nameof(EmailAnalyzerOptions.AcceptanceScore)} should be between -1.0 and 1.0")
+        // Our recommended acceptance score is between 0.24 and 0.35
+        .Validate(options => options.AcceptanceScore >= 0.0 || options.AcceptanceScore <= 1.0,
+            $"{nameof(EmailAnalyzerOptions.AcceptanceScore)} should be between 0.0 and 1.0")
         .ValidateOnStart();
 
     #endregion

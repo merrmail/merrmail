@@ -1,5 +1,6 @@
 <h3 align="center">MerrMail</h3>
 
+<!--suppress ALL-->
 <p align="center">
     <img src="https://img.shields.io/github/license/merrsoft/merrmail?style=for-the-badge" alt="GitHub License">
     <img src="https://img.shields.io/github/stars/merrsoft/merrmail?style=for-the-badge" alt="GitHub Repo stars">
@@ -8,6 +9,13 @@
 </p>
 
 <p align="center">MerrMail is an open-source email bot/assistant designed to organize and automate replies to your common emails.</p>
+
+### 🤔 How It Works?
+MerrMail utilizes AI to analyze and generate replies to your emails by providing context. Once the program starts, it creates three labels within your email account and begins organizing email threads from your inbox. Importantly, it does not mark your emails as read, allowing you to keep track of which ones you have already reviewed. (Currently, it only supports Gmail).
+
+- `MerrMail: High Priority` are email threads that did not receive an auto-reply.
+- `MerrMail: Low Priority` are email threads that received a reply from MerrMail. The reply is generated using the email contexts provided by the user of this program.
+- `MerrMail: Other` are email threads initiated by the host or email addresses identified as 'no-reply'.
 
 ### 🚀 Getting Started
 Before you begin, make sure you have the following. Note that all of these are free.
@@ -24,7 +32,8 @@ We will be building from source, so please follow the steps to install MerrMail 
 
 - First, open your terminal and clone this repository.
 ```sh
-git clone https://github.com/merrsoft/merrmail.git && cd merrmail
+$ git clone https://github.com/merrsoft/merrmail.git 
+$ cd merrmail
 ```
 
 - Take a look at the docker-compose.yml file. Alternatively, can build the Docker image from source.
@@ -50,12 +59,13 @@ services:
 
 - Setup our custom container of TensorFlow's Universal Sentence Encoder.
 ```sh
-mkdir -p secrets/universal_sentence_encoder && docker-compose up
+$ mkdir -p secrets/universal_sentence_encoder 
+$ docker-compose up
 ```
 
 - Navigate to the main entrypoint of the program.
 ```sh
-cd src/MerrMail 
+$ cd src/MerrMail 
 ```
 
 ### 🔧 Configuration
@@ -91,9 +101,9 @@ $ dotnet user-secrets set EmailApiOptions:HostPassword "your_email_account_app_p
 
 <br>
 
-- `AiIntegrationOptions:AcceptanceScore -0.35` is the "cosine similarity score" that is accepted by your program (we recommend between -0.24 and -0.35). It doesn't allow values that's not between -1.0 and 1.0.
+- `AiIntegrationOptions:AcceptanceScore 0.35` is the "cosine similarity score" that is accepted by your program (we recommend between 0.24 and 0.35). It doesn't allow values that's not between 0.0 and 1.0.
 ```sh
-dotnet user-secrets set AiIntegrationOptions:AcceptanceScore -0.35
+$ dotnet user-secrets set AiIntegrationOptions:AcceptanceScore 0.35
 ```
 
 <br>
@@ -134,12 +144,12 @@ Before using our program, please refer to our [License](https://github.com/merrs
 ### ▶️ Run
 - You can check if you've properly configured all your app secrets.
 ```sh
-dotnet user-secrets list
+$ dotnet user-secrets list
 ```
 
 - If everything is configured correctly, you can now run the program!
 ```sh
-dotnet run
+$ dotnet run
 ```
 
 ### 🙏 Thanks!
