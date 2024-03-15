@@ -15,11 +15,11 @@ public class TensorFlowEmailAnalyzerServiceTests
     {
         // Arrange
         var logger = new Logger<TensorFlowEmailAnalyzerService>(new LoggerFactory());
-        var aiIntegrationOptions = Options.Create(new EmailAnalyzerOptions { AcceptanceScore = -1.0f });
-        var pythonAiIntegrationService = new TensorFlowEmailAnalyzerService(logger, aiIntegrationOptions);
+        var emailAnalyzerOptions = Options.Create(new EmailAnalyzerOptions { AcceptanceScore = 1.0f });
+        var tensorFlowEmailAnalyzerService = new TensorFlowEmailAnalyzerService(logger, emailAnalyzerOptions);
 
         // Act
-        var result = pythonAiIntegrationService.Initialize();
+        var result = tensorFlowEmailAnalyzerService.Initialize();
 
         // Assert
         result.Should().BeTrue();
