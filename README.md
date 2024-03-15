@@ -60,7 +60,7 @@ services:
 - Setup our custom container of TensorFlow's Universal Sentence Encoder.
 ```sh
 $ mkdir -p secrets/universal_sentence_encoder 
-$ docker-compose up
+$ docker-compose up -d
 ```
 
 - Navigate to the main entrypoint of the program.
@@ -139,7 +139,7 @@ CREATE TABLE "EmailContext" (
 ```
 
 ### 📜 License
-Before using our program, please refer to our [License](https://github.com/merrsoft/merrmail/blob/main/LICENSE).
+Before running our program, please refer to our [License](https://github.com/merrsoft/merrmail/blob/main/LICENSE).
 
 ### ▶️ Run
 - You can check if you've properly configured all your app secrets.
