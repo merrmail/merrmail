@@ -2,11 +2,13 @@
 
 WORKDIR /app
 
-RUN mkdir -p /universal_sentence_encoder
-RUN pip install tensorflow-hub
+RUN mkdir -p /universal_sentence_encoder \
+    && pip install tensorflow-hub \
+    && apt-get update && apt-get install -y --no-install-recommends \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
-COPY Scripts/app.py /app/app.py
-COPY Scripts/universal_sentence_encoder.py /app/universal_sentence_encoder.py
+COPY Scripts/app.py Scripts/universal_sentence_encoder.py /app/
 
 EXPOSE 63778
 
