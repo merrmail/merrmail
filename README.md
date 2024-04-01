@@ -73,7 +73,7 @@ In order to run the program, you must properly set each configuration of MerrMai
 
 - `EmailReplyOptions:Header` sets the header format of the email.
 - `EmailReplyOptions:Introduction` sets the first part of the email. then shows the message from the database.
-- `EmailReplyOptinos:Conclusion` sets the last part of the email body.
+- `EmailReplyOptions:Conclusion` sets the last part of the email body.
 - `EmailReplyOptions:Closing` is self-explanatory.
 - `EmailReplyOptions:Signature` is the same.
 
