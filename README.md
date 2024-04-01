@@ -101,9 +101,9 @@ $ dotnet user-secrets set EmailApiOptions:HostPassword "your_email_account_app_p
 
 <br>
 
-- `AiIntegrationOptions:AcceptanceScore 0.35` is the "cosine similarity score" that is accepted by your program (we recommend between 0.24 and 0.35). It doesn't allow values that's not between 0.0 and 1.0.
+- `EmailAnalyzerOptions:AcceptanceScore 0.35` is the "cosine similarity score" that is accepted by your program (we recommend between 0.24 and 0.35). It doesn't allow values that's not between 0.0 and 1.0.
 ```sh
-$ dotnet user-secrets set AiIntegrationOptions:AcceptanceScore 0.35
+$ dotnet user-secrets set EmailAnalyzerOptions:AcceptanceScore 0.35
 ```
 
 <br>
@@ -113,7 +113,7 @@ $ dotnet user-secrets set AiIntegrationOptions:AcceptanceScore 0.35
 - `DataStorageOptions:DataStorageAccess` is the location of your data storage file. The file type varies depending on what data storage type you chose.
 ```sh
 $ dotnet user-secrets set DataStorageOptions:DataStorageType 0
-$ dotnet user-secrets set DataStorageOptions:DataStorageAccess "your_super_secret_data_storage_access"
+$ dotnet user-secrets set DataStorageOptions:DataStorageAccess "/path/to/your/data/storage/file"
 ```
 
 
