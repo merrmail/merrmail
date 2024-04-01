@@ -19,7 +19,7 @@ try
             outputTemplate: "[{Timestamp:HH:mm:ss} {Level:u3}] [{SourceContext}] - {Message:lj}{NewLine}{Exception}")
         .CreateLogger();
 
-    Log.Information("Welcome to Merr Mail!");
+    Log.Information("Welcome to MerrMail!");
     Log.Information("Configuring Services...");
 
     var builder = Host.CreateApplicationBuilder(args);
