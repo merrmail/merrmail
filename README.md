@@ -69,7 +69,7 @@ $ cd src/MerrMail
 ```
 
 ### 🔧 Configuration
-In order to run the program, you must properly set each configuration of MerrMail.
+In order to run the program, you must properly set each configuration of MerrMail. You can also refer to our sample [settings](https://github.com/merrsoft/merrmail/blob/main/secrets.json).
 
 - `EmailReplyOptions:Header` sets the header format of the email.
 - `EmailReplyOptions:Introduction` sets the first part of the email. then shows the message from the database.
