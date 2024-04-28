@@ -58,7 +58,7 @@ public class MerrMailWorker(
             var contexts = await dataStorageContext.GetEmailContextsAsync();
             var labelType = LabelType.High;
             
-            var reply = emailAnalyzerService.GetEmailReply(emailThread.Subject, contexts);
+            var reply = emailAnalyzerService.GetEmailReply(emailThread, contexts);
             if (reply is not null)
             {
                 emailReplyService.ReplyThread(emailThread, reply);

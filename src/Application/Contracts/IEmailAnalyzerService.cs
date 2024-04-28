@@ -5,5 +5,5 @@ namespace Merrsoft.MerrMail.Application.Contracts;
 public interface IEmailAnalyzerService
 {
     bool Initialize();
-    string? GetEmailReply(string email, IEnumerable<EmailContext> emailContexts);
+    string? GetEmailReply(EmailThread emailThread, IEnumerable<EmailContext> emailContexts);
 }

@@ -40,7 +40,7 @@ public class TensorFlowEmailAnalyzerServiceTests
         };
     
         // Act
-        var reply = service.GetEmailReply("Hi", emailContexts);
+        var reply = service.GetEmailReply(new EmailThread("test", "Hello", "Hi", "test@test.test"), emailContexts);
     
         // Assert
         reply.Should().Be("Correct!");

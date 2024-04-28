@@ -40,17 +40,24 @@ public partial class TensorFlowEmailAnalyzerService(
         }
     }
 
-    public string? GetEmailReply(string subject, IEnumerable<EmailContext> emailContexts)
+    public string? GetEmailReply(EmailThread emailThread, IEnumerable<EmailContext> emailContexts)
     {
         string? reply = null;
         var highestCosine = 0f;
 
         foreach (var emailContext in emailContexts)
         {
-            logger.LogInformation("Getting similarity score of {first} | {second}.", subject,
+            logger.LogInformation("Getting similarity score of subject: {first} | {second}.", emailThread.Subject,
                 emailContext.Subject);
-            var cosine = get_similarity_score(subject, emailContext.Subject);
-            logger.LogInformation("Received a similarity score of {cosine}.", cosine);
+            var subjectCosine = get_similarity_score(emailThread.Subject, emailContext.Subject);
+            logger.LogInformation("Received a similarity score of {subjectCosine}.", subjectCosine);
+            
+            logger.LogInformation("Getting similarity score of body: {first} | {second}.", emailThread.Body,
+                emailContext.Subject);
+            var bodyCosine = get_similarity_score(emailThread.Body, emailContext.Subject);
+            logger.LogInformation("Received a similarity score of {bodyCosine}.", bodyCosine);
+
+            var cosine = subjectCosine >= bodyCosine ? subjectCosine : bodyCosine;
 
             if (cosine < highestCosine) continue;
 
