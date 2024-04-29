@@ -132,7 +132,7 @@ We recommend wrapping values with quotes,"Wrap ""your quotes"" twice if you want
 ```sql
 -- Note that this is the create statement, not the content of the file.
 -- Use SQLite Browser to create tables.
-CREATE TABLE "EmailContext" (
+CREATE TABLE "EmailContexts" (
 	"Subject"	TEXT NOT NULL,
 	"Response"	TEXT NOT NULL
 )
