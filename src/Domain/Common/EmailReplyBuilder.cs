@@ -1,5 +1,8 @@
 ﻿namespace MerrMail.Domain.Common;
 
+/// <summary>
+/// Builder class for constructing an email reply in HTML format.
+/// </summary>
 public class EmailReplyBuilder
 {
     private string? _header;
@@ -9,42 +12,76 @@ public class EmailReplyBuilder
     private string? _closing;
     private string? _signature;
 
+    /// <summary>
+    /// Sets the header of the email reply.
+    /// </summary>
+    /// <param name="header">The header text.</param>
+    /// <returns>The current instance of <see cref="EmailReplyBuilder"/>.</returns>
     public EmailReplyBuilder SetHeader(string header)
     {
         _header = header;
         return this;
     }
 
+    /// <summary>
+    /// Sets the introduction of the email reply.
+    /// </summary>
+    /// <param name="introduction">The introduction text.</param>
+    /// <returns>The current instance of <see cref="EmailReplyBuilder"/>.</returns>
     public EmailReplyBuilder SetIntroduction(string introduction)
     {
         _introduction = introduction;
         return this;
     }
 
+    /// <summary>
+    /// Sets the main message of the email reply.
+    /// </summary>
+    /// <param name="systemMessage">The main message text.</param>
+    /// <returns>The current instance of <see cref="EmailReplyBuilder"/>.</returns>
     public EmailReplyBuilder SetMessage(string systemMessage)
     {
         _message = systemMessage;
         return this;
     }
 
+    /// <summary>
+    /// Sets the conclusion of the email reply.
+    /// </summary>
+    /// <param name="conclusion">The conclusion text.</param>
+    /// <returns>The current instance of <see cref="EmailReplyBuilder"/>.</returns>
     public EmailReplyBuilder SetConclusion(string conclusion)
     {
         _conclusion = conclusion;
         return this;
     }
 
+    /// <summary>
+    /// Sets the closing of the email reply.
+    /// </summary>
+    /// <param name="closing">The closing text.</param>
+    /// <returns>The current instance of <see cref="EmailReplyBuilder"/>.</returns>
     public EmailReplyBuilder SetClosing(string closing)
     {
         _closing = closing;
         return this;
     }
 
+    /// <summary>
+    /// Sets the signature of the email reply.
+    /// </summary>
+    /// <param name="signature">The signature text.</param>
+    /// <returns>The current instance of <see cref="EmailReplyBuilder"/>.</returns>
     public EmailReplyBuilder SetSignature(string signature)
     {
         _signature = signature;
         return this;
     }
 
+    /// <summary>
+    /// Builds the email reply in HTML format.
+    /// </summary>
+    /// <returns>The constructed email reply as an HTML string.</returns>
     public string Build()
     {
         return $"""

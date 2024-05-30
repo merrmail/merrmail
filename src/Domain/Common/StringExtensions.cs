@@ -2,6 +2,9 @@ using System.Text.RegularExpressions;
 
 namespace MerrMail.Domain.Common;
 
+/// <summary>
+/// Provides extension methods for string operations.
+/// </summary>
 public static partial class StringExtensions
 {
     /// <summary>
@@ -18,6 +21,10 @@ public static partial class StringExtensions
         return match.Success ? match.Groups[1].Value.Trim() : string.Empty;
     }
 
+    /// <summary>
+    /// Regular expression to parse email addresses.
+    /// </summary>
+    /// <returns>A compiled regular expression for matching email addresses.</returns>
     [GeneratedRegex("<([^>]+)>")]
     private static partial Regex EmailParserRegex();
 }
