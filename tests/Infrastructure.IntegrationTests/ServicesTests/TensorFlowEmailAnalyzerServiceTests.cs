@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
-using Merrsoft.MerrMail.Domain.Models;
-using Merrsoft.MerrMail.Infrastructure.Options;
-using Merrsoft.MerrMail.Infrastructure.Services;
+using MerrMail.Domain.Models;
+using MerrMail.Infrastructure.Options;
+using MerrMail.Infrastructure.Services;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;

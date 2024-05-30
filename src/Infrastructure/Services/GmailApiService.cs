@@ -1,23 +1,31 @@
 using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
-using Merrsoft.MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Domain.Common;
-using Merrsoft.MerrMail.Domain.Models;
-using Merrsoft.MerrMail.Domain.Types;
-using Merrsoft.MerrMail.Infrastructure.Options;
+using MerrMail.Application.Contracts;
+using MerrMail.Domain.Common;
+using MerrMail.Domain.Models;
+using MerrMail.Domain.Types;
+using MerrMail.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Merrsoft.MerrMail.Infrastructure.Services;
+namespace MerrMail.Infrastructure.Services;
 
+/// <summary>
+/// Email API service implementation for interacting with the Gmail API.
+/// </summary>
+/// <param name="logger">The logger instance.</param>
+/// <param name="emailApiOptions">The email API options.</param>
 public partial class GmailApiService(
     ILogger<GmailApiService> logger,
-    IOptions<EmailApiOptions> emailApiOptions)
-    : IEmailApiService
+    IOptions<EmailApiOptions> emailApiOptions) : IEmailApiService
 {
     private readonly string _host = emailApiOptions.Value.HostAddress;
     private GmailService? _gmailService;
 
+    /// <summary>
+    /// Initializes the Gmail service by authenticating and setting up required labels.
+    /// </summary>
+    /// <returns>True if initialization is successful, otherwise false.</returns>
     public async Task<bool> InitializeAsync()
     {
         try
@@ -128,15 +136,20 @@ public partial class GmailApiService(
         return null;
     }
 
-    public void MoveThread(string threadId, LabelType addLabel)
+    /// <summary>
+    /// Moves an email thread to a specified label.
+    /// </summary>
+    /// <param name="threadId">The ID of the email thread to move.</param>
+    /// <param name="labelType">The label type to which the thread will be moved.</param>
+    public void MoveThread(string threadId, LabelType labelType)
     {
-        var labelName = GetLabelName(addLabel);
+        var labelName = GetLabelName(labelType);
         var labelId = GetLabelId(labelName);
 
         var modifyThreadRequest = new ModifyThreadRequest
         {
             AddLabelIds = labelId is not null ? new List<string> { labelId } : null,
-            RemoveLabelIds = new List<string> { "INBOX" }
+            RemoveLabelIds = ["INBOX"]
         };
 
         var modifyThreadResponse = _gmailService!.Users.Threads.Modify(modifyThreadRequest, _host, threadId).Execute();

@@ -1,10 +1,10 @@
-﻿using Merrsoft.MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Domain.Models;
-using Merrsoft.MerrMail.Infrastructure.Options;
+﻿using MerrMail.Application.Contracts;
+using MerrMail.Domain.Models;
+using MerrMail.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Merrsoft.MerrMail.Infrastructure.Services;
+namespace MerrMail.Infrastructure.Services;
 
 public partial class TensorFlowEmailAnalyzerService(
     ILogger<TensorFlowEmailAnalyzerService> logger,
@@ -12,6 +12,10 @@ public partial class TensorFlowEmailAnalyzerService(
 {
     private readonly float _acceptedScore = emailAnalyzerOptions.Value.AcceptanceScore;
 
+    /// <summary>
+    /// Initializes the TensorFlow email analyzer service.
+    /// </summary>
+    /// <returns>True if initialization was successful; otherwise, false.</returns>
     public bool Initialize()
     {
         try
@@ -40,6 +44,12 @@ public partial class TensorFlowEmailAnalyzerService(
         }
     }
 
+    /// <summary>
+    /// Retrieves the best matching email reply based on email context and similarity scores.
+    /// </summary>
+    /// <param name="emailThread">The email thread to analyze.</param>
+    /// <param name="emailContexts">The collection of email contexts to compare with.</param>
+    /// <returns>The best matching email reply, or null if no suitable reply is found.</returns>
     public string? GetEmailReply(EmailThread emailThread, IEnumerable<EmailContext> emailContexts)
     {
         string? reply = null;

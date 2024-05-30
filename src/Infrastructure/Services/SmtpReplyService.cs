@@ -1,14 +1,20 @@
 ﻿using System.Net;
 using System.Net.Mail;
-using Merrsoft.MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Domain.Common;
-using Merrsoft.MerrMail.Domain.Models;
-using Merrsoft.MerrMail.Infrastructure.Options;
+using MerrMail.Application.Contracts;
+using MerrMail.Domain.Common;
+using MerrMail.Domain.Models;
+using MerrMail.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Merrsoft.MerrMail.Infrastructure.Services;
+namespace MerrMail.Infrastructure.Services;
 
+/// <summary>
+/// Email reply service implementation for replying to email threads using SMTP.
+/// </summary>
+/// <param name="logger">The logger instance.</param>
+/// <param name="replyContentOptions">The options for email reply content.</param>
+/// <param name="emailApiOptions">The options for email API configuration.</param>
 public class SmtpReplyService(
     ILogger<SmtpReplyService> logger,
     IOptions<EmailReplyOptions> replyContentOptions,
@@ -22,6 +28,11 @@ public class SmtpReplyService(
     private readonly string _closing = replyContentOptions.Value.Closing;
     private readonly string _signature = replyContentOptions.Value.Signature;
 
+    /// <summary>
+    /// Adds a reply to an email thread, sent by the host.
+    /// </summary>
+    /// <param name="emailThread">The email thread to reply to.</param>
+    /// <param name="message">The message from the host.</param>
     public void ReplyThread(EmailThread emailThread, string message)
     {
         var emailBody = new EmailReplyBuilder()
@@ -34,11 +45,13 @@ public class SmtpReplyService(
             .Build();
 
         const int gmailSmtpPort = 587;
-        var smtpClient = new SmtpClient("smtp.gmail.com", gmailSmtpPort);
-        smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-        smtpClient.EnableSsl = true;
-        smtpClient.UseDefaultCredentials = false;
-        smtpClient.Credentials = new NetworkCredential(_host, _password);
+        var smtpClient = new SmtpClient("smtp.gmail.com", gmailSmtpPort)
+        {
+            DeliveryMethod = SmtpDeliveryMethod.Network,
+            EnableSsl = true,
+            UseDefaultCredentials = false,
+            Credentials = new NetworkCredential(_host, _password)
+        };
 
         using var mailMessage = new MailMessage(_host, emailThread.Sender);
         mailMessage.Subject = "Re: " + emailThread.Subject;

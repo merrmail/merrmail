@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
-using Merrsoft.MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Application.Services;
-using Merrsoft.MerrMail.Infrastructure.Factories;
-using Merrsoft.MerrMail.Infrastructure.Options;
-using Merrsoft.MerrMail.Infrastructure.Services;
-using Merrsoft.MerrMail.Infrastructure.Types;
+using MerrMail.Application.Contracts;
+using MerrMail.Application.Services;
+using MerrMail.Infrastructure.Factories;
+using MerrMail.Infrastructure.Options;
+using MerrMail.Infrastructure.Services;
+using MerrMail.Infrastructure.Types;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;

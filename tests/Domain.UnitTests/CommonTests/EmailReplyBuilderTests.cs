@@ -1,5 +1,5 @@
 ﻿using HtmlAgilityPack;
-using Merrsoft.MerrMail.Domain.Common;
+using MerrMail.Domain.Common;
 
 namespace Merrsoft.MerrMail.Domain.UnitTests.CommonTests;
 

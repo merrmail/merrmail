@@ -1,16 +1,26 @@
-﻿using Merrsoft.MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Domain.Models;
-using Merrsoft.MerrMail.Infrastructure.Options;
+﻿using MerrMail.Application.Contracts;
+using MerrMail.Domain.Models;
+using MerrMail.Infrastructure.Options;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Merrsoft.MerrMail.Infrastructure.External;
+namespace MerrMail.Infrastructure.External;
 
-public class SqliteDataStorageContext(ILogger<SqliteDataStorageContext> logger, IOptions<DataStorageOptions> dataStorageOptions) : IDataStorageContext
+/// <summary>
+/// The data storage for accessing email contexts stored in a SQLite database.
+/// </summary>
+/// <param name="dataStorageOptions">The options containing the connection string of the database.</param>
+public class SqliteDataStorageContext(
+    ILogger<SqliteDataStorageContext> logger,
+    IOptions<DataStorageOptions> dataStorageOptions) : IDataStorageContext
 {
     private readonly string _dataStorageAccess = dataStorageOptions.Value.DataStorageAccess;
 
+    /// <summary>
+    /// Retrieves email contexts from a CSV file.
+    /// </summary>
+    /// <returns>A collection of EmailContext objects.</returns>
     public async Task<IEnumerable<EmailContext>> GetEmailContextsAsync()
     {
         try

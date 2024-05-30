@@ -1,4 +1,4 @@
-﻿using Merrsoft.MerrMail.Domain.Models;
+﻿using MerrMail.Domain.Models;
 
 namespace Merrsoft.MerrMail.Domain.UnitTests.ModelsTests;
 

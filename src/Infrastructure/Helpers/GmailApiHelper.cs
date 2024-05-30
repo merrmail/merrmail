@@ -3,24 +3,28 @@ using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
-using Merrsoft.MerrMail.Domain.Types;
+using MerrMail.Domain.Types;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable once CheckNamespace
-namespace Merrsoft.MerrMail.Infrastructure.Services;
+namespace MerrMail.Infrastructure.Services;
 
 public partial class GmailApiService
 {
     private readonly string _credentialsPath = emailApiOptions.Value.OAuthClientCredentialsFilePath;
     private readonly string _tokenPath = emailApiOptions.Value.AccessTokenDirectoryPath;
 
+    /// <summary>
+    /// Gets a GmailService instance for interacting with Gmail API.
+    /// </summary>
+    /// <returns>A GmailService instance.</returns>
     private async Task<GmailService> GetGmailServiceAsync()
     {
         await using var stream = new FileStream(_credentialsPath, FileMode.Open, FileAccess.Read);
 
         var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
             (await GoogleClientSecrets.FromStreamAsync(stream)).Secrets,
-            new[] { GmailService.Scope.GmailReadonly, GmailService.Scope.GmailModify },
+            [GmailService.Scope.GmailReadonly, GmailService.Scope.GmailModify],
             "user",
             CancellationToken.None,
             new FileDataStore(_tokenPath, true));
@@ -32,6 +36,10 @@ public partial class GmailApiService
         });
     }
 
+    /// <summary>
+    /// Gets a list of threads from the host's Gmail mailbox.
+    /// </summary>
+    /// <returns>A ListThreadsResponse containing the list of threads.</returns>
     private ListThreadsResponse? GetThreads()
     {
         try
@@ -49,6 +57,11 @@ public partial class GmailApiService
         }
     }
 
+    /// <summary>
+    /// Creates a new label in the host's Gmail mailbox if it does not exist already.
+    /// </summary>
+    /// <param name="labelName">The name of the label to create.</param>
+    /// <returns>True if the label is created successfully or already exists; false otherwise.</returns>
     private bool CreateLabel(string labelName)
     {
         var labelsRequest = _gmailService!.Users.Labels.List(_host);
@@ -107,6 +120,11 @@ public partial class GmailApiService
         return false;
     }
 
+    /// <summary>
+    /// Gets the ID of a label by its name.
+    /// </summary>
+    /// <param name="labelName">The name of the label to get the ID for.</param>
+    /// <returns>The ID of the label, or null if not found.</returns>
     private string? GetLabelId(string? labelName)
     {
         try
@@ -127,6 +145,11 @@ public partial class GmailApiService
         }
     }
 
+    /// <summary>
+    /// Gets the name of a label by its type.
+    /// </summary>
+    /// <param name="labelType">The type of label to get the name for.</param>
+    /// <returns>The name of the label, or null if not applicable.</returns>
     private static string? GetLabelName(LabelType labelType)
     {
         return labelType switch
@@ -139,6 +162,11 @@ public partial class GmailApiService
         };
     }
 
+    /// <summary>
+    /// Checks if a message has been analyzed and labeled.
+    /// </summary>
+    /// <param name="message">The message to check.</param>
+    /// <returns>True if the message has been analyzed and labeled; false otherwise.</returns>
     private bool MessageAnalyzed(Message message)
     {
         return message.LabelIds?.Any(label =>

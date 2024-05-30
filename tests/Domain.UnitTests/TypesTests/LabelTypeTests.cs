@@ -1,4 +1,4 @@
-﻿using Merrsoft.MerrMail.Domain.Types;
+﻿using MerrMail.Domain.Types;
 
 namespace Merrsoft.MerrMail.Domain.UnitTests.TypesTests;
 
