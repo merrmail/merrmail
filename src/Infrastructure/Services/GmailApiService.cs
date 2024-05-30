@@ -10,6 +10,11 @@ using Microsoft.Extensions.Options;
 
 namespace MerrMail.Infrastructure.Services;
 
+/// <summary>
+/// Email API service implementation for interacting with the Gmail API.
+/// </summary>
+/// <param name="logger">The logger instance.</param>
+/// <param name="emailApiOptions">The email API options.</param>
 public partial class GmailApiService(
     ILogger<GmailApiService> logger,
     IOptions<EmailApiOptions> emailApiOptions)
@@ -18,6 +23,10 @@ public partial class GmailApiService(
     private readonly string _host = emailApiOptions.Value.HostAddress;
     private GmailService? _gmailService;
 
+    /// <summary>
+    /// Initializes the Gmail service by authenticating and setting up required labels.
+    /// </summary>
+    /// <returns>True if initialization is successful, otherwise false.</returns>
     public async Task<bool> InitializeAsync()
     {
         try
@@ -128,6 +137,11 @@ public partial class GmailApiService(
         return null;
     }
 
+    /// <summary>
+    /// Moves an email thread to a specified label.
+    /// </summary>
+    /// <param name="threadId">The ID of the email thread to move.</param>
+    /// <param name="labelType">The label type to which the thread will be moved.</param>
     public void MoveThread(string threadId, LabelType labelType)
     {
         var labelName = GetLabelName(labelType);

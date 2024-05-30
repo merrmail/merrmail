@@ -2,7 +2,7 @@
 using MerrMail.Infrastructure.External;
 using MerrMail.Infrastructure.Factories;
 using MerrMail.Infrastructure.Options;
-using Merrsoft.MerrMail.Infrastructure.Types;
+using MerrMail.Infrastructure.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;

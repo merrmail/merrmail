@@ -1,5 +1,4 @@
 using MerrMail.Domain.Common;
-using Merrsoft.MerrMail.Domain.Common;
 
 // ReSharper disable UseVerbatimString
 // ReSharper disable StringLiteralTypo

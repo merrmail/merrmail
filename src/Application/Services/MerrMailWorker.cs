@@ -58,7 +58,7 @@ public class MerrMailWorker(
     /// </summary>
     /// <param name="stoppingToken">A token to monitor for cancellation requests.</param>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-    { 
+    {
         logger.LogInformation("Started reading emails...");
 
         while (!stoppingToken.IsCancellationRequested)
@@ -74,14 +74,14 @@ public class MerrMailWorker(
             // We also prefer speed than RAM usage, so we're getting all rows instead of iterating each row
             var contexts = await dataStorageContext.GetEmailContextsAsync();
             var labelType = LabelType.High;
-            
+
             var reply = emailAnalyzerService.GetEmailReply(emailThread, contexts);
             if (reply is not null)
             {
                 emailReplyService.ReplyThread(emailThread, reply);
                 labelType = LabelType.Low;
             }
-            
+
             emailApiService.MoveThread(emailThread.Id, labelType);
             await Task.Delay(1000, stoppingToken);
             // break; /* <== Comment this when you want to test the loop */

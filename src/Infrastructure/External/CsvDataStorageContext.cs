@@ -7,10 +7,20 @@ using Microsoft.VisualBasic.FileIO;
 
 namespace MerrMail.Infrastructure.External;
 
-public class CsvDataStorageContext(ILogger<CsvDataStorageContext> logger, IOptions<DataStorageOptions> dataStorageOptions) : IDataStorageContext
+/// <summary>
+/// The data storage for accessing email contexts stored in a CSV file.
+/// </summary>
+/// <param name="dataStorageOptions">The options containing the file path of the CSV file.</param>
+public class CsvDataStorageContext(
+    ILogger<CsvDataStorageContext> logger,
+    IOptions<DataStorageOptions> dataStorageOptions) : IDataStorageContext
 {
     private readonly string _dataStorageAccess = dataStorageOptions.Value.DataStorageAccess;
-    
+
+    /// <summary>
+    /// Retrieves email contexts from a CSV file.
+    /// </summary>
+    /// <returns>A collection of EmailContext objects.</returns>
     public async Task<IEnumerable<EmailContext>> GetEmailContextsAsync()
     {
         try

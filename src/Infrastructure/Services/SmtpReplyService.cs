@@ -9,6 +9,12 @@ using Microsoft.Extensions.Options;
 
 namespace MerrMail.Infrastructure.Services;
 
+/// <summary>
+/// Email reply service implementation for replying to email threads using SMTP.
+/// </summary>
+/// <param name="logger">The logger instance.</param>
+/// <param name="replyContentOptions">The options for email reply content.</param>
+/// <param name="emailApiOptions">The options for email API configuration.</param>
 public class SmtpReplyService(
     ILogger<SmtpReplyService> logger,
     IOptions<EmailReplyOptions> replyContentOptions,
@@ -22,6 +28,11 @@ public class SmtpReplyService(
     private readonly string _closing = replyContentOptions.Value.Closing;
     private readonly string _signature = replyContentOptions.Value.Signature;
 
+    /// <summary>
+    /// Adds a reply to an email thread, sent by the host.
+    /// </summary>
+    /// <param name="emailThread">The email thread to reply to.</param>
+    /// <param name="message">The message from the host.</param>
     public void ReplyThread(EmailThread emailThread, string message)
     {
         var emailBody = new EmailReplyBuilder()

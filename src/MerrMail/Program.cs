@@ -4,11 +4,10 @@ using MerrMail.Application.Services;
 using MerrMail.Infrastructure.Factories;
 using MerrMail.Infrastructure.Options;
 using MerrMail.Infrastructure.Services;
-using Merrsoft.MerrMail.Infrastructure.Types;
+using MerrMail.Infrastructure.Types;
 using Microsoft.Extensions.Options;
 using Serilog;
 using Serilog.Events;
-using TensorFlowEmailAnalyzerService = MerrMail.Infrastructure.Services.TensorFlowEmailAnalyzerService;
 
 try
 {

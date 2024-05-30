@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using Merrsoft.MerrMail.Infrastructure.Types;
+using MerrMail.Infrastructure.Types;
 
 namespace Infrastructure.IntegrationTests.TypesTests;
 
