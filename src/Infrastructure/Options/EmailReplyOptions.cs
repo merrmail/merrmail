@@ -1,4 +1,4 @@
-﻿namespace Merrsoft.MerrMail.Infrastructure.Options;
+﻿namespace MerrMail.Infrastructure.Options;
 
 public class EmailReplyOptions
 {

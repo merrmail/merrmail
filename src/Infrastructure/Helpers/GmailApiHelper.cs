@@ -7,7 +7,7 @@ using MerrMail.Domain.Types;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable once CheckNamespace
-namespace Merrsoft.MerrMail.Infrastructure.Services;
+namespace MerrMail.Infrastructure.Services;
 
 public partial class GmailApiService
 {

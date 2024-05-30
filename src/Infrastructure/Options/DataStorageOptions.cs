@@ -1,6 +1,6 @@
 ﻿using Merrsoft.MerrMail.Infrastructure.Types;
 
-namespace Merrsoft.MerrMail.Infrastructure.Options;
+namespace MerrMail.Infrastructure.Options;
 
 public class DataStorageOptions
 {

@@ -1,7 +1,7 @@
 ﻿using FluentAssertions;
-using Merrsoft.MerrMail.Infrastructure.External;
-using Merrsoft.MerrMail.Infrastructure.Factories;
-using Merrsoft.MerrMail.Infrastructure.Options;
+using MerrMail.Infrastructure.External;
+using MerrMail.Infrastructure.Factories;
+using MerrMail.Infrastructure.Options;
 using Merrsoft.MerrMail.Infrastructure.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;

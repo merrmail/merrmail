@@ -1,11 +1,11 @@
 ﻿using MerrMail.Application.Contracts;
 using MerrMail.Domain.Models;
-using Merrsoft.MerrMail.Infrastructure.Options;
+using MerrMail.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic.FileIO;
 
-namespace Merrsoft.MerrMail.Infrastructure.External;
+namespace MerrMail.Infrastructure.External;
 
 public class CsvDataStorageContext(ILogger<CsvDataStorageContext> logger, IOptions<DataStorageOptions> dataStorageOptions) : IDataStorageContext
 {

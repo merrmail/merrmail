@@ -1,11 +1,11 @@
 ﻿using MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Infrastructure.External;
-using Merrsoft.MerrMail.Infrastructure.Options;
+using MerrMail.Infrastructure.External;
+using MerrMail.Infrastructure.Options;
 using Merrsoft.MerrMail.Infrastructure.Types;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Merrsoft.MerrMail.Infrastructure.Factories;
+namespace MerrMail.Infrastructure.Factories;
 
 public class DataStorageContextFactory(ILoggerFactory loggerFactory, IOptions<DataStorageOptions> dataStorageOptions)
 {

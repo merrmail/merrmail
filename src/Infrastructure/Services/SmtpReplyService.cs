@@ -3,11 +3,11 @@ using System.Net.Mail;
 using MerrMail.Application.Contracts;
 using MerrMail.Domain.Common;
 using MerrMail.Domain.Models;
-using Merrsoft.MerrMail.Infrastructure.Options;
+using MerrMail.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Merrsoft.MerrMail.Infrastructure.Services;
+namespace MerrMail.Infrastructure.Services;
 
 public class SmtpReplyService(
     ILogger<SmtpReplyService> logger,

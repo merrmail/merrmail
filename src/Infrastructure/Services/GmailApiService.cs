@@ -4,11 +4,11 @@ using MerrMail.Application.Contracts;
 using MerrMail.Domain.Common;
 using MerrMail.Domain.Models;
 using MerrMail.Domain.Types;
-using Merrsoft.MerrMail.Infrastructure.Options;
+using MerrMail.Infrastructure.Options;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Merrsoft.MerrMail.Infrastructure.Services;
+namespace MerrMail.Infrastructure.Services;
 
 public partial class GmailApiService(
     ILogger<GmailApiService> logger,

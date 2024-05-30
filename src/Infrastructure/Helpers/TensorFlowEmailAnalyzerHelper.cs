@@ -5,7 +5,7 @@ using System.Text.Json;
 // ReSharper disable InconsistentNaming
 
 // ReSharper disable once CheckNamespace
-namespace Merrsoft.MerrMail.Infrastructure.Services;
+namespace MerrMail.Infrastructure.Services;
 
 public partial class TensorFlowEmailAnalyzerService
 {
