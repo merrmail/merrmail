@@ -2,6 +2,9 @@
 
 namespace MerrMail.Application.Contracts;
 
+/// <summary>
+/// Represents a contract for replying to email threads.
+/// </summary>
 public interface IEmailReplyService
 {
     /// <summary>

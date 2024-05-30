@@ -3,6 +3,9 @@ using MerrMail.Domain.Types;
 
 namespace MerrMail.Application.Contracts;
 
+/// <summary>
+/// Represents a contract for interacting with an email API.
+/// </summary>
 public interface IEmailApiService
 {
     /// <summary>

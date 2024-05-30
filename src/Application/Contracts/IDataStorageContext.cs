@@ -2,7 +2,9 @@
 
 namespace MerrMail.Application.Contracts;
 
-
+/// <summary>
+/// Represents a contract for retrieving email contexts from a data storage, which could be a database or a CSV file.
+/// </summary>
 public interface IDataStorageContext
 {
     /// <summary>
