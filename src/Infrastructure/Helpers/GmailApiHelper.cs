@@ -24,7 +24,7 @@ public partial class GmailApiService
 
         var credential = await GoogleWebAuthorizationBroker.AuthorizeAsync(
             (await GoogleClientSecrets.FromStreamAsync(stream)).Secrets,
-            new[] { GmailService.Scope.GmailReadonly, GmailService.Scope.GmailModify },
+            [GmailService.Scope.GmailReadonly, GmailService.Scope.GmailModify],
             "user",
             CancellationToken.None,
             new FileDataStore(_tokenPath, true));

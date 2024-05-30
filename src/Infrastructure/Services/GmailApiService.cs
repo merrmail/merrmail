@@ -149,7 +149,7 @@ public partial class GmailApiService(
         var modifyThreadRequest = new ModifyThreadRequest
         {
             AddLabelIds = labelId is not null ? new List<string> { labelId } : null,
-            RemoveLabelIds = new List<string> { "INBOX" }
+            RemoveLabelIds = ["INBOX"]
         };
 
         var modifyThreadResponse = _gmailService!.Users.Threads.Modify(modifyThreadRequest, _host, threadId).Execute();

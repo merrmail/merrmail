@@ -45,11 +45,13 @@ public class SmtpReplyService(
             .Build();
 
         const int gmailSmtpPort = 587;
-        var smtpClient = new SmtpClient("smtp.gmail.com", gmailSmtpPort);
-        smtpClient.DeliveryMethod = SmtpDeliveryMethod.Network;
-        smtpClient.EnableSsl = true;
-        smtpClient.UseDefaultCredentials = false;
-        smtpClient.Credentials = new NetworkCredential(_host, _password);
+        var smtpClient = new SmtpClient("smtp.gmail.com", gmailSmtpPort)
+        {
+            DeliveryMethod = SmtpDeliveryMethod.Network,
+            EnableSsl = true,
+            UseDefaultCredentials = false,
+            Credentials = new NetworkCredential(_host, _password)
+        };
 
         using var mailMessage = new MailMessage(_host, emailThread.Sender);
         mailMessage.Subject = "Re: " + emailThread.Subject;
