@@ -5,6 +5,15 @@ using Microsoft.Extensions.Logging;
 
 namespace MerrMail.Application.Services;
 
+/// <summary>
+/// The main MerrMail worker service class that holds everything together, including email validation, processing, and replying.
+/// </summary>
+/// <param name="logger">The logger instance to log information and errors.</param>
+/// <param name="emailApiService">The email API service for interacting with the email platform.</param>
+/// <param name="emailReplyService">The email reply service for sending replies to email threads.</param>
+/// <param name="emailAnalyzerService">The email analyzer service for analyzing email threads.</param>
+/// <param name="dataStorageContext">The data storage context for retrieving email contexts.</param>
+/// <param name="httpClient">The HTTP client for checking internet connectivity.</param>
 public class MerrMailWorker(
     ILogger<MerrMailWorker> logger,
     IEmailApiService emailApiService,
@@ -14,6 +23,10 @@ public class MerrMailWorker(
     HttpClient httpClient)
     : BackgroundService
 {
+    /// <summary>
+    /// Starts the MerrMail worker service with the necessary initializations.
+    /// </summary>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     public override async Task StartAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Starting validation...");
@@ -40,6 +53,10 @@ public class MerrMailWorker(
         await base.StartAsync(cancellationToken);
     }
 
+    /// <summary>
+    /// Executes the main loop of the MerrMail worker, processing email threads and generating replies.
+    /// </summary>
+    /// <param name="stoppingToken">A token to monitor for cancellation requests.</param>
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     { 
         logger.LogInformation("Started reading emails...");
@@ -71,12 +88,20 @@ public class MerrMailWorker(
         }
     }
 
+    /// <summary>
+    /// Stops the MerrMail worker service.
+    /// </summary>
+    /// <param name="cancellationToken">A token to monitor for cancellation requests.</param>
     public override async Task StopAsync(CancellationToken cancellationToken)
     {
         logger.LogInformation("Stopping Merr Mail Background Service...");
         await base.StopAsync(cancellationToken);
     }
 
+    /// <summary>
+    /// Checks internet connectivity by attempting to access a specified URL.
+    /// </summary>
+    /// <returns>True if the internet connection is valid, otherwise false.</returns>
     private async Task<bool> CheckInternetAsync()
     {
         try

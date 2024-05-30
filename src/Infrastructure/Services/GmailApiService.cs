@@ -128,9 +128,9 @@ public partial class GmailApiService(
         return null;
     }
 
-    public void MoveThread(string threadId, LabelType addLabel)
+    public void MoveThread(string threadId, LabelType labelType)
     {
-        var labelName = GetLabelName(addLabel);
+        var labelName = GetLabelName(labelType);
         var labelId = GetLabelId(labelName);
 
         var modifyThreadRequest = new ModifyThreadRequest
