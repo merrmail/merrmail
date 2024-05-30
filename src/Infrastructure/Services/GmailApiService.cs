@@ -17,8 +17,7 @@ namespace MerrMail.Infrastructure.Services;
 /// <param name="emailApiOptions">The email API options.</param>
 public partial class GmailApiService(
     ILogger<GmailApiService> logger,
-    IOptions<EmailApiOptions> emailApiOptions)
-    : IEmailApiService
+    IOptions<EmailApiOptions> emailApiOptions) : IEmailApiService
 {
     private readonly string _host = emailApiOptions.Value.HostAddress;
     private GmailService? _gmailService;

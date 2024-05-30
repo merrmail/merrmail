@@ -20,8 +20,7 @@ public class MerrMailWorker(
     IEmailReplyService emailReplyService,
     IEmailAnalyzerService emailAnalyzerService,
     IDataStorageContext dataStorageContext,
-    HttpClient httpClient)
-    : BackgroundService
+    HttpClient httpClient) : BackgroundService
 {
     /// <summary>
     /// Starts the MerrMail worker service with the necessary initializations.
