@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Net.Mail;
-using Merrsoft.MerrMail.Application.Contracts;
+using MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Domain.Common;
 using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Infrastructure.Options;

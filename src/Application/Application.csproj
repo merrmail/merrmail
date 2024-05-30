@@ -4,7 +4,7 @@
         <TargetFramework>net8.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
-        <RootNamespace>Merrsoft.MerrMail.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
+        <RootNamespace>MerrMail.$(MSBuildProjectName.Replace(" ", "_"))</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

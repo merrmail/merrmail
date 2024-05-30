@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
-using Merrsoft.MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Application.Services;
+using MerrMail.Application.Contracts;
+using MerrMail.Application.Services;
 using Merrsoft.MerrMail.Infrastructure.Factories;
 using Merrsoft.MerrMail.Infrastructure.Options;
 using Merrsoft.MerrMail.Infrastructure.Services;

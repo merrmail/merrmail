@@ -1,6 +1,6 @@
 ﻿using Merrsoft.MerrMail.Domain.Models;
 
-namespace Merrsoft.MerrMail.Application.Contracts;
+namespace MerrMail.Application.Contracts;
 
 public interface IEmailReplyService
 {

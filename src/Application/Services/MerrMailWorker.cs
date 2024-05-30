@@ -1,9 +1,9 @@
-using Merrsoft.MerrMail.Application.Contracts;
+using MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Domain.Types;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace Merrsoft.MerrMail.Application.Services;
+namespace MerrMail.Application.Services;
 
 public class MerrMailWorker(
     ILogger<MerrMailWorker> logger,

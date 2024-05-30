@@ -1,4 +1,4 @@
-﻿using Merrsoft.MerrMail.Application.Contracts;
+﻿using MerrMail.Application.Contracts;
 using Merrsoft.MerrMail.Infrastructure.External;
 using Merrsoft.MerrMail.Infrastructure.Options;
 using Merrsoft.MerrMail.Infrastructure.Types;

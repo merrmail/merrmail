@@ -1,7 +1,7 @@
 using Merrsoft.MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Domain.Types;
 
-namespace Merrsoft.MerrMail.Application.Contracts;
+namespace MerrMail.Application.Contracts;
 
 public interface IEmailApiService
 {
