@@ -1,3 +1,3 @@
-﻿namespace Merrsoft.MerrMail.Domain.Models;
+﻿namespace MerrMail.Domain.Models;
 
 public record EmailContext(string Subject, string Response);

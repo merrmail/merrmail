@@ -1,5 +1,5 @@
-using Merrsoft.MerrMail.Domain.Models;
-using Merrsoft.MerrMail.Domain.Types;
+using MerrMail.Domain.Models;
+using MerrMail.Domain.Types;
 
 namespace MerrMail.Application.Contracts;
 

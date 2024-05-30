@@ -1,4 +1,4 @@
-﻿namespace Merrsoft.MerrMail.Domain.Common;
+﻿namespace MerrMail.Domain.Common;
 
 public class EmailReplyBuilder
 {

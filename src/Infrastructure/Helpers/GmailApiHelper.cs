@@ -3,7 +3,7 @@ using Google.Apis.Gmail.v1;
 using Google.Apis.Gmail.v1.Data;
 using Google.Apis.Services;
 using Google.Apis.Util.Store;
-using Merrsoft.MerrMail.Domain.Types;
+using MerrMail.Domain.Types;
 using Microsoft.Extensions.Logging;
 
 // ReSharper disable once CheckNamespace

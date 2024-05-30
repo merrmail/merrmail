@@ -1,5 +1,5 @@
 using MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Domain.Types;
+using MerrMail.Domain.Types;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
@@ -54,7 +54,7 @@ public class MerrMailWorker(
             }
 
             // We don't store email contexts once so the users of this program can still do CRUD operations on the database
-            // We also prefer speed over RAM usage so we're getting all rows instead of iterating each row
+            // We also prefer speed than RAM usage, so we're getting all rows instead of iterating each row
             var contexts = await dataStorageContext.GetEmailContextsAsync();
             var labelType = LabelType.High;
             

@@ -1,5 +1,5 @@
 ﻿using MerrMail.Application.Contracts;
-using Merrsoft.MerrMail.Domain.Models;
+using MerrMail.Domain.Models;
 using Merrsoft.MerrMail.Infrastructure.Options;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
